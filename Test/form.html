@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Форма посетителя</title>
+</head>
+<body>
+    <header>
+        <h1>Оформление визита</h1>
+    </header>
+
+    <form action="process_form.php" method="post">
+        <!-- Поля ввода -->
+        <label for="fullname">ФИО:</label>
+        <input type="text" id="fullname" name="fullname" required>
+
+        <label for="phone">Телефон:</label>
+        <input type="tel" id="phone" name="phone" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <!-- Флажки -->
+        <fieldset>
+            <legend>Экспозиции к посещению:</legend>
+            <!-- Список экспозиций -->
+            <input type="checkbox" id="exhibition1" name="exhibitions[]" value="1">
+            <label for="exhibition1">Экспозиция 1</label>
+
+            <input type="checkbox" id="exhibition2" name="exhibitions[]" value="2">
+            <label for="exhibition2">Экспозиция 2</label>
+            <!-- Добавьте дополнительные экспозиции по необходимости -->
+        </fieldset>
+
+        <!-- Селекторные переключатели -->
+        <label>Вид экскурсии:</label>
+        <input type="radio" id="guide" name="tour_type" value="guide" required>
+        <label for="guide">Экскурсовод</label>
+
+        <input type="radio" id="audio" name="tour_type" value="audio" required>
+        <label for="audio">Аудио-гид</label>
+
+        <input type="radio" id="self" name="tour_type" value="self" required>
+        <label for="self">Самостоятельный просмотр</label>
+
+        <!-- Выпадающий список -->
+        <label for="day">День посещения:</label>
+        <select id="day" name="visit_day" required>
+            <option value="Понедельник">Понедельник</option>
+            <option value="Среда">Среда</option>
+            <option value="Пятница">Пятница</option>
+        </select>
+
+        <!-- Многострочное поле ввода -->
+        <label for="additional_info">Дополнительная информация:</label>
+        <textarea id="additional_info" name="additional_info" rows="4"></textarea>
+
+        <!-- Кнопки -->
+        <button type="submit">Оформить визит</button>
+        <button type="reset">Очистить форму</button>
+    </form>
+
+    <footer>
+        <p>&copy; 2023 Картинная галерея</p>
+    </footer>
+</body>
+</html>
