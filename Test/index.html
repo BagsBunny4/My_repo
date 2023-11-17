@@ -65,6 +65,71 @@
     <figure>
         <img src="img\miet_logo.png" alt="Пример изображения">
         <figcaption>Пример изображения</figcaption>
-      </figure>
+    </figure>
+
+    <table border="1">
+        <tr>
+          <th>Имя</th>
+          <th>Возраст</th>
+          <th>Город</th>
+        </tr>
+        <tr>
+          <td>Анна</td>
+          <td>25</td>
+          <td>Москва</td>
+        </tr>
+        <tr>
+          <td>Иван</td>
+          <td>30</td>
+          <td>Санкт-Петербург</td>
+        </tr>
+      </table>
+      
+      <table border="2">
+        <tr>
+          <th>№</th>
+          <td>Имя</td>
+          <td>Возраст</td>
+          <td>Город</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>Анна</td>
+          <td>25</td>
+          <td>Москва</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Иван</td>
+          <td>30</td>
+          <td>Санкт-Петербург</td>
+        </tr>
+      </table>
+      
+      <form>
+        <label for="username">Имя пользователя:</label>
+        <input type="text" id="username" name="username">
+        
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" name="password">
+        
+        <input type="submit" value="Отправить">
+        <input type="radio" id="male" name="gender" value="male">
+<label for="male">Мужской</label>
+
+<input type="radio" id="female" name="gender" value="female">
+<label for="female">Женский</label>
+<input type="checkbox" id="subscribe" name="subscribe" value="yes">
+<label for="subscribe">Подписаться на рассылку</label>
+      </form>
+      <select id="colors" name="colors">
+        <option value="red">Красный</option>
+        <option value="green">Зеленый</option>
+        <option value="blue">Синий</option>
+      </select>
+      <label for="message">Введите ваше сообщение:</label>
+<textarea id="message" name="message" rows="4" cols="50" wrap="soft"></textarea>
+
+
 </body>
 </html>
