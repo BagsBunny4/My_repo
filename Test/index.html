@@ -3,28 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Картинная галерея</title>
+    <title>Пример использования элемента &lt;div&gt;</title>
+    <style>
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+
+        .header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .main-content {
+            float: left;
+            width: 70%;
+            background-color: #e0e0e0;
+            padding: 10px;
+        }
+
+        .sidebar {
+            float: left;
+            width: 30%;
+            background-color: #d0d0d0;
+            padding: 10px;
+        }
+
+        .footer {
+            clear: both;
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Добро пожаловать в картинную галерею</h1>
-    </header>
-    
-    <nav>
-        <ul>
-            <li><a href="#">Главная</a></li>
-            <li><a href="#">Экспозиции</a></li>
-            <li><a href="#">О нас</a></li>
-        </ul>
-    </nav>
 
-    <main>
-        <!-- Содержимое главной страницы (ссылки на экспозиции и их описания) -->
-    </main>
+    <div class="container">
+        <div class="header">
+            <h1>Заголовок страницы</h1>
+        </div>
 
-    <footer>
-        <p>&copy; 2023 Картинная галерея</p>
-    </footer>
+        <div class="main-content">
+            <p>Основной контент страницы...</p>
+        </div>
+
+        <div class="sidebar">
+            <p>Боковая панель...</p>
+        </div>
+
+        <div class="footer">
+            <p>Нижняя часть страницы</p>
+        </div>
+    </div>
+
+    <figure>
+        <img src="img\miet_logo.png" alt="Пример изображения">
+        <figcaption>Пример изображения</figcaption>
+      </figure>
 </body>
 </html>
