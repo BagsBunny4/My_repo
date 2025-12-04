@@ -294,31 +294,85 @@
 
         /* --- МОДАЛКА (POPUP) --- */
         .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6);
-            z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.3s;
-            display: flex; flex-direction: column; justify-content: flex-end; backdrop-filter: blur(3px);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 20% 20%, rgba(108,166,255,0.14), transparent 32%),
+                        radial-gradient(circle at 80% 0%, rgba(255,184,102,0.12), transparent 28%),
+                        rgba(0, 0, 0, 0.65);
+            z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+            display: flex; flex-direction: column; justify-content: flex-end; backdrop-filter: blur(10px);
         }
         .modal-overlay.visible { opacity: 1; pointer-events: all; }
-        
+
         /* Шторка */
         .modal-content-sheet {
-            background: var(--modal-background); border-radius: 20px 20px 0 0; 
+            background: linear-gradient(145deg, rgba(24, 26, 30, 0.96), rgba(16, 17, 20, 0.96));
+            border-radius: 24px 24px 0 0;
             padding-bottom: calc(30px + var(--safe-area-bottom));
             width: 100%; max-height: 85%; display: flex; flex-direction: column;
             transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-            box-shadow: 0 -5px 25px rgba(0,0,0,0.5);
+            box-shadow: 0 -12px 40px rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.06);
         }
         .modal-overlay.visible .modal-content-sheet { transform: translateY(0); }
-        
-        .modal-header { padding: 18px; text-align: center; font-weight: 600; border-bottom: 0.5px solid var(--separator-color); color: var(--text-secondary); }
+
+        .modal-topbar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 18px 10px 18px; position: sticky; top: 0; backdrop-filter: blur(8px);
+            background: linear-gradient(180deg, rgba(255,255,255,0.04), transparent);
+        }
+        .modal-handle { width: 48px; height: 5px; border-radius: 999px; background: rgba(255,255,255,0.18); margin: 0 auto 12px auto; }
+        .modal-heading { font-size: 1.05rem; margin: 0; color: #fff; letter-spacing: 0.2px; }
+        .modal-subheading { font-size: 0.9rem; color: var(--text-secondary); margin: 6px 0 0 0; }
+        .modal-close { color: var(--text-secondary); font-weight: 600; cursor: pointer; padding: 8px 10px; border-radius: 10px; transition: background 0.2s ease; }
+        .modal-close:hover { background: rgba(255,255,255,0.06); }
+        .modal-body { padding: 0 18px 18px 18px; display: flex; flex-direction: column; gap: 14px; }
+        .modal-card {
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 18px; padding: 14px 16px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+        .modal-input-wrap {
+            display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-radius: 14px;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.06);
+        }
+        .modal-input { width: 100%; background: transparent; border: none; color: #fff; font-size: 20px; text-align: center; }
+        .modal-label { font-size: 0.93rem; color: var(--text-secondary); margin-bottom: 6px; display: block; }
+        .modal-actions { display: flex; gap: 10px; }
+        .ghost-button { flex: 1; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+        .ghost-button:hover { background: rgba(255,255,255,0.08); }
+        .ghost-button.primary { background: linear-gradient(135deg, rgba(108,166,255,0.95), rgba(201,169,255,0.9)); border: none; box-shadow: 0 10px 20px rgba(108,166,255,0.3); color: #fff; }
+
+        .modal-header { padding: 16px 18px; font-weight: 600; border-bottom: 0.5px solid var(--separator-color); color: var(--text-secondary); text-align: left; }
         .modal-scroll-area { overflow-y: auto; -webkit-overflow-scrolling: touch; }
-        
+
         /* Центрированная модалка */
         .modal-centered {
-            background: #1C1C1E; border-radius: 14px; 
-            width: min(85%, 400px); margin: auto;
-            overflow: hidden; display: flex; flex-direction: column;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            background: linear-gradient(160deg, rgba(24,26,30,0.96), rgba(12,13,16,0.98)); border-radius: 20px;
+            width: min(85%, 420px); margin: auto; border: 1px solid rgba(255,255,255,0.06);
+            overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 25px 60px rgba(0,0,0,0.55);
+        }
+        .modal-centered .modal-body { padding: 0 24px 22px 24px; }
+        .modal-centered h3 { font-size: 20px; letter-spacing: 0.2px; }
+        .modal-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 0 24px; }
+
+        .premium-slider {
+            -webkit-appearance: none; appearance: none;
+            width: 100%; height: 12px; border-radius: 999px;
+            background: linear-gradient(90deg, rgba(108,166,255,0.55), rgba(201,169,255,0.45));
+            outline: none; box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+        }
+        .premium-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 26px; height: 26px; border-radius: 50%;
+            background: linear-gradient(135deg, #7FB3FF, #C9A9FF);
+            box-shadow: 0 10px 25px rgba(108,166,255,0.35), inset 0 1px 0 rgba(255,255,255,0.5);
+            border: 2px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+        }
+        .premium-slider::-moz-range-thumb {
+            width: 26px; height: 26px; border-radius: 50%;
+            background: linear-gradient(135deg, #7FB3FF, #C9A9FF);
+            box-shadow: 0 10px 25px rgba(108,166,255,0.35), inset 0 1px 0 rgba(255,255,255,0.5);
+            border: 2px solid rgba(255,255,255,0.2);
+            cursor: pointer;
         }
 
         .avatar-circle { background: #636366; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; color: #FFF; font-size: 14px; flex-shrink: 0; }
@@ -331,6 +385,18 @@
             background: rgba(118, 118, 128, 0.12); border-radius: 8px;
         }
         .load-more-btn:active { background: rgba(118, 118, 128, 0.2); }
+
+        /* SETTINGS */
+        .settings-section { margin-bottom: 20px; }
+        .settings-card { background: var(--card-background); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); box-shadow: var(--card-shadow); overflow: hidden; }
+        .settings-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; gap: 12px; }
+        .settings-row + .settings-row { border-top: 1px solid var(--separator-color); }
+        .settings-label-block { display: flex; align-items: center; gap: 12px; }
+        .settings-icon { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; color: #fff; font-size: 18px; }
+        .settings-title { font-size: 1rem; font-weight: 600; color: #fff; }
+        .settings-hint { font-size: 13px; color: var(--text-secondary); }
+        .settings-arrow { color: var(--text-secondary); font-size: 18px; }
+        .settings-note { font-size: 13px; color: var(--text-secondary); line-height: 1.5; padding: 0 4px 8px 4px; }
 
         /* DEBT UI */
         .pain-badge { background: rgba(255, 69, 58, 0.15); color: #FF453A; padding: 6px 10px; border-radius: 6px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; margin-top: 5px; }
@@ -572,37 +638,43 @@
     <!-- IMPULSE BUY MODAL -->
     <div id="impulse-modal" class="modal-overlay">
         <div class="modal-content-sheet">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding:0 10px;">
-                <h2 style="margin:0; color:white;">Проверка желания 🛍</h2>
-                <div onclick="closeImpulseModal()" style="color:var(--accent-blue); font-weight:600; cursor:pointer;">Закрыть</div>
-            </div>
-            
-            <p style="text-align:center; color:#8E8E93; font-size:14px; margin-bottom:10px;">Сколько стоит вещь?</p>
-            <div style="background: #2C2C2E; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; margin-bottom: 20px;">
-                <input type="number" id="input-impulse-amount" style="width: 100%; background: transparent; border: none; color: #FFF; font-size: 24px; text-align: center;" placeholder="0" oninput="checkImpulse(this.value)">
-                <span style="color: #8E8E93; font-size: 20px;">₽</span>
+            <div class="modal-handle"></div>
+            <div class="modal-topbar">
+                <div>
+                    <h2 class="modal-heading">Проверка желания 🛍</h2>
+                    <p class="modal-subheading">Быстро оценим цену импульса</p>
+                </div>
+                <div class="modal-close" onclick="closeImpulseModal()">Закрыть</div>
             </div>
 
-            <div id="impulse-loading" class="hidden" style="text-align:center; color:#8E8E93;">Считаю последствия...</div>
-
-            <div id="impulse-results" class="hidden">
-                <div class="impulse-result-box">
-                    <div class="impulse-stat-row">
-                        <span style="color:#8E8E93">Это от общего долга:</span>
-                        <span id="impulse-res-percent" class="impulse-stat-val">0%</span>
-                    </div>
-                    <div class="impulse-stat-row">
-                        <span style="color:#8E8E93">Потерянные деньги (%):</span>
-                        <span id="impulse-res-lost" class="impulse-stat-val" style="color:#FF453A">0 ₽</span>
-                    </div>
-                    <div class="impulse-warning" id="impulse-res-text">
-                        Эта покупка отодвинет вашу свободу на 5 дней.
-                    </div>
+            <div class="modal-body">
+                <label class="modal-label">Сколько стоит вещь?</label>
+                <div class="modal-input-wrap">
+                    <input type="number" id="input-impulse-amount" class="modal-input" placeholder="0" oninput="checkImpulse(this.value)">
+                    <span style="color: var(--text-secondary); font-size: 18px;">₽</span>
                 </div>
 
-                <div style="display:flex; gap:10px; margin-top:20px;">
-                    <button class="button-primary" style="background:#333; margin-top:0;" onclick="proceedToBuy()">Всё равно купить</button>
-                    <button class="button-primary" style="background:var(--accent-green); margin-top:0;" onclick="proceedToRepay()">Погасить долг</button>
+                <div id="impulse-loading" class="hidden" style="text-align:center; color:var(--text-secondary);">Считаю последствия...</div>
+
+                <div id="impulse-results" class="hidden" style="display:flex; flex-direction:column; gap:12px;">
+                    <div class="modal-card">
+                        <div class="impulse-stat-row">
+                            <span style="color:var(--text-secondary)">Это от общего долга:</span>
+                            <span id="impulse-res-percent" class="impulse-stat-val">0%</span>
+                        </div>
+                        <div class="impulse-stat-row">
+                            <span style="color:var(--text-secondary)">Потерянные деньги (%):</span>
+                            <span id="impulse-res-lost" class="impulse-stat-val" style="color:#FF6B6B">0 ₽</span>
+                        </div>
+                        <div class="impulse-warning" id="impulse-res-text">
+                            Эта покупка отодвинет вашу свободу на 5 дней.
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button class="ghost-button" onclick="proceedToBuy()">Всё равно купить</button>
+                        <button class="ghost-button primary" onclick="proceedToRepay()">Погасить долг</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -611,18 +683,32 @@
     <!-- SIMULATOR MODAL -->
     <div id="sim-modal" class="modal-overlay">
         <div class="modal-content-sheet">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding:0 10px;">
-                <h2 style="margin:0; color:white;">Ускоритель 🚀</h2>
-                <div onclick="closeSim()" style="color:var(--accent-blue); font-weight:600; cursor:pointer;">Готово</div>
+            <div class="modal-handle"></div>
+            <div class="modal-topbar">
+                <div>
+                    <h2 class="modal-heading">Ускоритель 🚀</h2>
+                    <p class="modal-subheading">Сколько добавим к платежу?</p>
+                </div>
+                <div class="modal-close" onclick="closeSim()">Готово</div>
             </div>
-            <p style="text-align:center; color:#8E8E93; font-size:13px;">Добавить к ежемесячному платежу:</p>
-            <div id="sim-display-amount" class="sim-value-large">+ 0 ₽</div>
-            <input type="range" id="sim-slider" min="0" max="50000" step="1000" value="0" oninput="updateSimulator(this.value)">
-            <div class="sim-result-row">
-                <div><div class="sim-label">Новая дата свободы</div><div id="sim-res-date" class="sim-data">...</div></div>
-                <div style="text-align:right"><div class="sim-label">Выгода</div><div id="sim-res-saved" class="sim-data sim-better">0 ₽</div></div>
+            <div class="modal-body">
+                <div class="modal-card" style="text-align:center; gap:8px; display:flex; flex-direction:column; align-items:center;">
+                    <div class="modal-label" style="margin:0;">Ежемесячная надбавка</div>
+                    <div id="sim-display-amount" class="sim-value-large">+ 0 ₽</div>
+                    <input type="range" id="sim-slider" min="0" max="50000" step="1000" value="0" oninput="updateSimulator(this.value)" class="premium-slider">
+                </div>
+                <div class="modal-card" style="display:flex; justify-content:space-between; align-items:center; gap:16px;">
+                    <div>
+                        <div class="sim-label">Новая дата свободы</div>
+                        <div id="sim-res-date" class="sim-data">...</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="sim-label">Выгода</div>
+                        <div id="sim-res-saved" class="sim-data sim-better">0 ₽</div>
+                    </div>
+                </div>
+                <div style="font-size:12px; color:var(--text-secondary); text-align:center; line-height:1.5;">Передвигая ползунок, вы видите, как дополнительные вложения сокращают срок кредита.</div>
             </div>
-            <div style="font-size:12px; color:#666; margin-top:15px; text-align:center; line-height:1.4;">Передвигая ползунок, вы видите, как дополнительные вложения сокращают срок кредита.</div>
         </div>
     </div>
 
@@ -903,34 +989,38 @@
                 <h1>Настройки</h1>
                 
                 <div class="settings-header-label">Профиль</div>
-                
-                <div class="card-container" onclick="inviteFamilyMember()" style="cursor:pointer;">
-                    <div class="list-item-row">
-                        <div style="display:flex;align-items:center;">
-                            <div style="background:#0A84FF; width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-right:12px; color:#FFF; font-size:18px;">👨‍👩‍👧</div>
-                            <span style="font-size:17px; font-weight:500; color:#FFF;">Пригласить семью</span>
+                <div class="settings-section">
+                    <div class="settings-card">
+                        <div class="settings-row interactive-row" onclick="inviteFamilyMember()">
+                            <div class="settings-label-block">
+                                <div class="settings-icon" style="background: linear-gradient(135deg, #0A84FF, #64D2FF);">👨‍👩‍👧</div>
+                                <div>
+                                    <div class="settings-title">Пригласить семью</div>
+                                    <div class="settings-hint">Доступ к общим финансам</div>
+                                </div>
+                            </div>
+                            <span class="settings-arrow">›</span>
                         </div>
-                        <span style="color:#8E8E93; font-size:17px;">›</span>
-                    </div>
-                </div>
-
-                <div class="card-container" onclick="openSubscriptionsPage()" style="cursor:pointer;">
-                    <div class="list-item-row">
-                        <div style="display:flex;align-items:center;">
-                            <div style="background:#BF5AF2; width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-right:12px; color:#FFF; font-size:18px;">📅</div>
-                            <span style="font-size:17px; font-weight:500; color:#FFF;">Мои подписки</span>
+                        <div class="settings-row interactive-row" onclick="openSubscriptionsPage()">
+                            <div class="settings-label-block">
+                                <div class="settings-icon" style="background: linear-gradient(135deg, #BF5AF2, #C9A9FF);">📅</div>
+                                <div>
+                                    <div class="settings-title">Мои подписки</div>
+                                    <div class="settings-hint">Контроль регулярных оплат</div>
+                                </div>
+                            </div>
+                            <span class="settings-arrow">›</span>
                         </div>
-                        <span style="color:#8E8E93; font-size:17px;">›</span>
-                    </div>
-                </div>
-
-                <div class="card-container" onclick="forceUpdateStructure()" style="cursor:pointer;">
-                    <div class="list-item-row">
-                        <div style="display:flex;align-items:center;">
-                            <div style="background:#333; width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-right:12px; color:#FFF; font-size:18px;">🛠️</div>
-                            <span style="font-size:17px; font-weight:500; color:#FFF;">Обновить таблицу</span>
+                        <div class="settings-row interactive-row" onclick="forceUpdateStructure()">
+                            <div class="settings-label-block">
+                                <div class="settings-icon" style="background: linear-gradient(135deg, #3A3A3C, #1C1C1E);">🛠️</div>
+                                <div>
+                                    <div class="settings-title">Обновить таблицу</div>
+                                    <div class="settings-hint">Синхронизация с Google Sheet</div>
+                                </div>
+                            </div>
+                            <span class="settings-arrow">›</span>
                         </div>
-                        <span style="color:#8E8E93; font-size:17px;">›</span>
                     </div>
                 </div>
 
@@ -938,41 +1028,56 @@
                 <div class="card-container hidden" id="family-list-container"></div>
 
                 <div class="settings-header-label">Финансы</div>
-                <!-- Emergency Fund Setting -->
-                <div class="card-container">
-                     <div class="list-item-row" onclick="document.getElementById('input-settings-emergency').focus()">
-                        <div class="row-label">Цель подушки (₽)</div>
-                        <input 
-                            type="number" 
-                            id="input-settings-emergency" 
-                            class="row-input" 
-                            placeholder="0" 
-                            inputmode="numeric" 
-                            onchange="saveEmergencyGoal(this.value)"
-                        >
+                <div class="settings-section">
+                    <div class="settings-card" style="padding: 14px 16px 8px 16px; display:flex; flex-direction:column; gap: 10px;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                            <div>
+                                <div class="settings-title">Цель подушки (₽)</div>
+                                <div class="settings-hint">Сумма до старта досрочных платежей</div>
+                            </div>
+                            <div class="settings-icon" style="background: linear-gradient(135deg, #34C759, #0FB57E);">🛡</div>
+                        </div>
+                        <div class="modal-input-wrap" style="justify-content:flex-start; padding: 12px 14px;">
+                            <span style="color: var(--text-secondary); font-weight:600;">₽</span>
+                            <input
+                                type="number"
+                                id="input-settings-emergency"
+                                class="modal-input"
+                                style="text-align:left; font-size: 18px;"
+                                placeholder="0"
+                                inputmode="numeric"
+                                onchange="saveEmergencyGoal(this.value)"
+                            >
+                        </div>
+                        <p class="settings-note">Свободные средства сверх этой суммы направляются на ускорение закрытия долгов.</p>
                     </div>
-                    <p style="font-size: 12px; color: #666; padding: 0 16px 12px 16px; margin: 0;">
-                        Сумма, которую нужно накопить до начала досрочного погашения кредитов.
-                    </p>
                 </div>
 
                 <div class="settings-header-label">Управление категориями</div>
                 
                 <!-- NEW CREATE CATEGORY BLOCK -->
-                <div class="card-container" style="padding: 16px;">
-                    <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">Название новой категории</div>
-                    <input type="text" id="input-new-category-name" class="input-large-block" placeholder="Например: Продукты">
-                    
-                    <div class="segment-control-container" style="margin-bottom: 16px;">
-                        <div class="segment-button active" onclick="setNewCategoryType('expense', this)">Расход</div>
-                        <div class="segment-button" onclick="setNewCategoryType('income', this)">Доход</div>
+                <div class="settings-section">
+                    <div class="settings-card" style="padding: 16px; display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:flex; align-items:center; justify-content:space-between;">
+                            <div>
+                                <div class="settings-title">Новая категория</div>
+                                <div class="settings-hint">Поможет точнее вести учет</div>
+                            </div>
+                            <div class="settings-icon" style="background: linear-gradient(135deg, #FF9F0A, #FF6B6B);">➕</div>
+                        </div>
+                        <input type="text" id="input-new-category-name" class="input-large-block" placeholder="Например: Продукты" style="margin-bottom: 8px;">
+
+                        <div class="segment-control-container" style="margin-bottom: 8px;">
+                            <div class="segment-button active" onclick="setNewCategoryType('expense', this)">Расход</div>
+                            <div class="segment-button" onclick="setNewCategoryType('income', this)">Доход</div>
+                        </div>
+
+                        <button id="button-create-category" class="button-primary" style="margin-top:4px;">Добавить категорию</button>
                     </div>
-                    
-                    <button id="button-create-category" class="button-primary" style="margin-top:0;">Добавить категорию</button>
                 </div>
 
                 <div class="settings-header-label">Мои категории</div>
-                <div class="card-container" id="settings-categories-list"></div>
+                <div class="settings-card" id="settings-categories-list"></div>
             </div>
 
             <!-- SUBSCRIPTIONS PAGE -->
@@ -1027,25 +1132,40 @@
 
     <!-- MODALS -->
     <div id="modal-overlay" class="modal-overlay">
-        <div class="modal-content-sheet"><div class="modal-header" id="modal-header-title">Выбор</div><div id="modal-list-container" class="modal-scroll-area"></div></div>
+        <div class="modal-content-sheet">
+            <div class="modal-handle"></div>
+            <div class="modal-topbar" style="padding-bottom: 12px;">
+                <div>
+                    <h2 class="modal-heading" id="modal-header-title">Выбор</h2>
+                    <p class="modal-subheading">Отметьте нужный пункт</p>
+                </div>
+                <div class="modal-close" onclick="modalOverlay.classList.remove('visible')">Готово</div>
+            </div>
+            <div id="modal-list-container" class="modal-scroll-area" style="padding: 0 10px 14px 10px;"></div>
+        </div>
     </div>
 
     <!-- REPAY MODAL -->
     <div id="repay-modal-overlay" class="modal-overlay" style="justify-content: center; align-items: center; padding: 20px;">
         <div class="modal-centered">
-            <div style="padding: 20px; text-align: center;">
-                <h3 id="repay-modal-title" style="margin: 0 0 5px 0; font-size: 18px;">Погашение</h3>
-                <p id="repay-modal-subtitle" style="color: #8E8E93; font-size: 13px; margin: 0;">Сколько внести?</p>
+            <div class="modal-handle" style="margin-top: 16px;"></div>
+            <div style="padding: 10px 24px 4px 24px; text-align: center;">
+                <h3 id="repay-modal-title" style="margin: 0 0 6px 0;">Погашение</h3>
+                <p id="repay-modal-subtitle" style="color: var(--text-secondary); font-size: 14px; margin: 0;">Сколько внести?</p>
             </div>
-            <div style="padding: 20px;">
-                <div style="background: #2C2C2E; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center;">
-                    <input type="number" id="input-repay-amount" style="width: 100%; background: transparent; border: none; color: #FFF; font-size: 18px;" placeholder="0">
-                    <span style="color: #8E8E93;">₽</span>
+            <div class="modal-body" style="gap: 16px;">
+                <div>
+                    <label class="modal-label">Сумма платежа</label>
+                    <div class="modal-input-wrap" style="justify-content:center;">
+                        <input type="number" id="input-repay-amount" class="modal-input" placeholder="0">
+                        <span style="color: var(--text-secondary);">₽</span>
+                    </div>
                 </div>
             </div>
-            <div style="display: flex; border-top: 0.5px solid #38383A;">
-                <button onclick="closeRepayModal()" style="flex: 1; background: transparent; border: none; border-right: 0.5px solid #38383A; color: #8E8E93; font-size: 17px; padding: 15px; cursor: pointer;">Отмена</button>
-                <button onclick="confirmRepayDebt()" style="flex: 1; background: transparent; border: none; color: #0A84FF; font-size: 17px; font-weight: 600; padding: 15px; cursor: pointer;">Внести</button>
+            <div class="modal-divider"></div>
+            <div class="modal-actions" style="padding: 16px 24px 20px 24px;">
+                <button class="ghost-button" onclick="closeRepayModal()">Отмена</button>
+                <button class="ghost-button primary" onclick="confirmRepayDebt()">Внести</button>
             </div>
         </div>
     </div>
@@ -1053,23 +1173,27 @@
     <!-- BUDGET MODAL -->
     <div id="budget-modal-overlay" class="modal-overlay" style="justify-content: center; align-items: center; padding: 20px;">
         <div class="modal-centered">
-            <div style="padding: 20px; text-align: center;">
-                <h3 id="budget-modal-title" style="margin: 0 0 5px 0; font-size: 18px;">Категория</h3>
-                <p style="color: #8E8E93; font-size: 13px; margin: 0;">Установка месячного лимита</p>
+            <div class="modal-handle" style="margin-top: 16px;"></div>
+            <div style="padding: 10px 24px 4px 24px; text-align: center;">
+                <h3 id="budget-modal-title" style="margin: 0 0 6px 0;">Категория</h3>
+                <p style="color: var(--text-secondary); font-size: 14px; margin: 0;">Установка месячного лимита</p>
             </div>
-            <div id="budget-stats-container" style="background: rgba(118, 118, 128, 0.12); margin: 0 20px; border-radius: 8px; padding: 12px;">
-                <div style="text-align: center; color: #8E8E93; font-size: 13px;">Загрузка истории...</div>
-            </div>
-            <div style="padding: 20px;">
-                <div class="row-label" style="font-size: 13px; margin-bottom: 8px; color: #8E8E93;">Новый лимит:</div>
-                <div style="background: #2C2C2E; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center;">
-                    <input type="number" id="input-budget-limit" style="width: 100%; background: transparent; border: none; color: #FFF; font-size: 18px;" placeholder="0">
-                    <span style="color: #8E8E93;">₽</span>
+            <div class="modal-body" style="gap: 14px;">
+                <div id="budget-stats-container" class="modal-card" style="margin: 0 6px;">
+                    <div style="text-align: center; color: var(--text-secondary); font-size: 13px;">Загрузка истории...</div>
+                </div>
+                <div>
+                    <label class="modal-label">Новый лимит</label>
+                    <div class="modal-input-wrap" style="justify-content:center;">
+                        <input type="number" id="input-budget-limit" class="modal-input" placeholder="0">
+                        <span style="color: var(--text-secondary);">₽</span>
+                    </div>
                 </div>
             </div>
-            <div style="display: flex; border-top: 0.5px solid #38383A;">
-                <button onclick="closeBudgetModal()" style="flex: 1; background: transparent; border: none; border-right: 0.5px solid #38383A; color: #8E8E93; font-size: 17px; padding: 15px; cursor: pointer;">Отмена</button>
-                <button onclick="saveBudgetFromModal()" style="flex: 1; background: transparent; border: none; color: #0A84FF; font-size: 17px; font-weight: 600; padding: 15px; cursor: pointer;">Сохранить</button>
+            <div class="modal-divider"></div>
+            <div class="modal-actions" style="padding: 16px 24px 20px 24px;">
+                <button class="ghost-button" onclick="closeBudgetModal()">Отмена</button>
+                <button class="ghost-button primary" onclick="saveBudgetFromModal()">Сохранить</button>
             </div>
         </div>
     </div>
@@ -1077,19 +1201,24 @@
     <!-- RECONCILE MODAL -->
     <div id="reconcile-modal-overlay" class="modal-overlay" style="justify-content: center; align-items: center; padding: 20px;">
         <div class="modal-centered">
-            <div style="padding: 20px; text-align: center;">
-                <h3 style="margin: 0 0 5px 0; font-size: 18px;">Сверка баланса</h3>
-                <p id="reconcile-wallet-name" style="color: #8E8E93; font-size: 13px; margin: 0;">...</p>
+            <div class="modal-handle" style="margin-top: 16px;"></div>
+            <div style="padding: 10px 24px 4px 24px; text-align: center;">
+                <h3 style="margin: 0 0 6px 0;">Сверка баланса</h3>
+                <p id="reconcile-wallet-name" style="color: var(--text-secondary); font-size: 14px; margin: 0;">...</p>
             </div>
-            <div style="padding: 20px;">
-                <div style="background: #2C2C2E; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center;">
-                    <input type="number" id="input-reconcile-amount" style="width: 100%; background: transparent; border: none; color: #FFF; font-size: 18px;" placeholder="Реальный баланс">
-                    <span style="color: #8E8E93;">₽</span>
+            <div class="modal-body" style="gap: 16px;">
+                <div>
+                    <label class="modal-label">Реальный баланс</label>
+                    <div class="modal-input-wrap" style="justify-content:center;">
+                        <input type="number" id="input-reconcile-amount" class="modal-input" placeholder="Введите сумму">
+                        <span style="color: var(--text-secondary);">₽</span>
+                    </div>
                 </div>
             </div>
-            <div style="display: flex; border-top: 0.5px solid #38383A;">
-                <button onclick="closeReconcileModal()" style="flex: 1; background: transparent; border: none; border-right: 0.5px solid #38383A; color: #8E8E93; font-size: 17px; padding: 15px; cursor: pointer;">Отмена</button>
-                <button onclick="confirmReconcile()" style="flex: 1; background: transparent; border: none; color: #0A84FF; font-size: 17px; font-weight: 600; padding: 15px; cursor: pointer;">Сверить</button>
+            <div class="modal-divider"></div>
+            <div class="modal-actions" style="padding: 16px 24px 20px 24px;">
+                <button class="ghost-button" onclick="closeReconcileModal()">Отмена</button>
+                <button class="ghost-button primary" onclick="confirmReconcile()">Сверить</button>
             </div>
         </div>
     </div>
