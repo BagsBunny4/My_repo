@@ -7,27 +7,36 @@
     <!-- Подключение Telegram Web Apps API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         :root {
             /* --- ЦВЕТОВАЯ ПАЛИТРА --- */
-            --background-color: #000000;
-            --card-background: #1C1C1E;
-            --modal-background: #2C2C2E;
-            --text-primary: #FFFFFF;
-            --text-secondary: #8E8E93;
-            --separator-color: #38383A;
-            --row-active-bg: #2C2C2E;
-            
+            --background-color: #050608;
+            --background-glow: radial-gradient(circle at 20% 20%, rgba(90, 132, 255, 0.12), transparent 35%),
+                radial-gradient(circle at 80% 0%, rgba(255, 120, 80, 0.12), transparent 30%),
+                #050608;
+            --card-background: rgba(20, 22, 26, 0.85);
+            --card-elevated: rgba(24, 26, 30, 0.9);
+            --modal-background: rgba(18, 19, 22, 0.94);
+            --text-primary: #F5F6F8;
+            --text-secondary: #9AA0AA;
+            --separator-color: rgba(255, 255, 255, 0.08);
+            --row-active-bg: rgba(255, 255, 255, 0.04);
+
             /* Акцентные цвета */
-            --accent-blue: #0A84FF;
-            --accent-green: #30D158;
-            --accent-red: #FF453A;
-            --accent-orange: #FF9F0A;
-            --accent-yellow: #FFD60A;
-            --accent-purple: #BF5AF2;
+            --accent-blue: #6CA6FF;
+            --accent-green: #3DD6A0;
+            --accent-red: #FF6B6B;
+            --accent-orange: #FFB866;
+            --accent-yellow: #FFE38C;
+            --accent-purple: #C9A9FF;
 
             /* Безопасные зоны */
             --safe-area-top: env(safe-area-inset-top, 20px);
             --safe-area-bottom: env(safe-area-inset-bottom, 20px);
+
+            /* Тени и радиусы */
+            --card-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+            --card-radius: 16px;
         }
 
         /* --- БАЗОВЫЕ СТИЛИ --- */
@@ -35,11 +44,12 @@
         
         html, body {
             margin: 0; padding: 0;
-            background-color: var(--background-color);
+            background: var(--background-glow);
             color: var(--text-primary);
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
-            height: 100vh; 
-            overflow: hidden; 
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+            letter-spacing: 0.01em;
+            height: 100vh;
+            overflow: hidden;
             overflow-x: hidden; /* Added to prevent horizontal overflow */
         }
 
@@ -48,15 +58,17 @@
         }
 
         .scrollable-content {
-            flex: 1; 
-            overflow-y: auto; 
+            flex: 1;
+            overflow-y: auto;
             overflow-x: hidden;
             width: 100vw; /* Фикс ширины */
             -webkit-overflow-scrolling: touch;
             padding-top: calc(var(--safe-area-top) + 10px);
-            padding-bottom: calc(85px + var(--safe-area-bottom)); 
-            padding-left: 16px; 
-            padding-right: 16px;
+            padding-bottom: calc(85px + var(--safe-area-bottom));
+            padding-left: 18px;
+            padding-right: 18px;
+            max-width: 720px;
+            margin: 0 auto;
         }
         .scrollable-content::-webkit-scrollbar { display: none; }
 
@@ -70,7 +82,7 @@
 
         /* --- ТИПОГРАФИКА --- */
         h1 { font-size: 2rem; font-weight: 700; margin: 0 0 20px 0; letter-spacing: 0.35px; }
-        h2 { font-size: 0.8125rem; font-weight: 400; color: var(--text-secondary); text-transform: uppercase; margin: 28px 0 8px 16px; letter-spacing: -0.1px; }
+        h2 { font-size: 0.8125rem; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; margin: 28px 0 8px 16px; letter-spacing: 0.08em; }
         
         /* Стили заголовков для настроек */
         .settings-header-label {
@@ -84,31 +96,36 @@
 
         /* --- КАРТОЧКИ --- */
         .card-container {
-            background: var(--card-background); 
-            border-radius: 12px; 
-            overflow: hidden; 
-            margin-bottom: 24px;
+            background: var(--card-background);
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
         }
 
         .target-debt-card {
-            border: 1px solid var(--accent-orange);
-            box-shadow: 0 0 15px rgba(255, 159, 10, 0.15);
+            border: 1px solid rgba(255, 184, 102, 0.4);
+            box-shadow: 0 16px 40px rgba(255, 184, 102, 0.18);
+            background: linear-gradient(135deg, rgba(255, 184, 102, 0.12), rgba(255, 135, 80, 0.08))
+                , var(--card-background);
         }
 
         .list-item-row {
-            display: flex; 
-            align-items: center; 
+            display: flex;
+            align-items: center;
             justify-content: flex-start; /* Changed from space-between */
             flex-wrap: wrap; /* Added for adaptability */
-            padding: 12px 16px; 
-            min-height: 52px; 
-            background: var(--card-background); 
+            padding: 14px 18px;
+            min-height: 56px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 80%), var(--card-background);
             position: relative;
-            transition: background 0.2s ease;
+            transition: background 0.2s ease, transform 0.15s ease;
         }
         
         .list-item-row.is-focused { background-color: var(--row-active-bg); }
-        .list-item-row:active { background-color: var(--row-active-bg); }
+        .list-item-row:active { background-color: var(--row-active-bg); transform: translateY(1px); }
         .list-item-row:not(:last-child)::after {
             content: ''; position: absolute; bottom: 0; left: 16px; right: 0; height: 0.5px; background-color: var(--separator-color);
         }
@@ -180,9 +197,10 @@
         .date-nav-label { font-size: 0.9375rem; font-weight: 600; color: var(--text-primary); text-transform: capitalize; }
 
         .balance-display-card {
-            background: linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 100%);
-            border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, rgba(108, 166, 255, 0.12), rgba(201, 169, 255, 0.08)), var(--card-elevated);
+            border-radius: var(--card-radius); padding: 24px; text-align: center; margin-bottom: 16px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         /* FIX: Adaptive balance font size */
@@ -212,14 +230,15 @@
         .text-green { color: var(--accent-green); } .text-red { color: var(--accent-red); }
 
         .segment-control-container {
-            background: #28282A; padding: 2px; border-radius: 9px;
+            background: rgba(255, 255, 255, 0.04); padding: 2px; border-radius: 12px;
             display: flex; margin: 0 auto 24px; width: 100%; max-width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         .segment-button {
-            flex: 1; text-align: center; padding: 7px; font-size: 0.8125rem; font-weight: 600;
-            border-radius: 7px; cursor: pointer; color: var(--text-primary); transition: all 0.2s;
+            flex: 1; text-align: center; padding: 9px; font-size: 0.875rem; font-weight: 600;
+            border-radius: 9px; cursor: pointer; color: var(--text-primary); transition: all 0.2s;
         }
-        .segment-button.active { background: #636366; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); }
+        .segment-button.active { background: rgba(255, 255, 255, 0.08); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05); }
 
         /* --- ГРАФИКИ --- */
         .chart-container-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
@@ -265,11 +284,12 @@
         .navbar-item span { font-size: 10px; font-weight: 500; }
 
         .button-primary {
-            width: 100%; background: var(--accent-blue); color: white; border: none;
-            padding: 16px; border-radius: 12px; font-size: 17px; font-weight: 600; margin-top: 12px; cursor: pointer;
-            transition: opacity 0.2s;
+            width: 100%; background: linear-gradient(135deg, rgba(108, 166, 255, 0.95), rgba(201, 169, 255, 0.85)); color: white; border: none;
+            padding: 16px; border-radius: 14px; font-size: 17px; font-weight: 700; margin-top: 12px; cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.2s ease;
+            box-shadow: 0 10px 24px rgba(108, 166, 255, 0.35);
         }
-        .button-primary:active { opacity: 0.7; }
+        .button-primary:active { transform: translateY(1px); box-shadow: 0 6px 16px rgba(108, 166, 255, 0.25); }
         .hidden { display: none !important; }
 
         /* --- МОДАЛКА (POPUP) --- */
