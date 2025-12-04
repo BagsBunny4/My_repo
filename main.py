@@ -513,10 +513,6 @@ async def sheet_handler(message: types.Message):
 
 async def handler(event, context):
     print(f"[LOG] Raw event received: {event}")
-    if "messages" in event:
-        print("[WARMUP] MQ warm-up signal received")
-        return {"statusCode": 200, "body": "warmup ok"}
-
     method = event.get("httpMethod")
     print(f"[LOG] >>> NEW REQUEST. Method: {method}")
     cors = {
