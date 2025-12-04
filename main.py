@@ -512,14 +512,27 @@ async def sheet_handler(message: types.Message):
 # --- MAIN API HANDLER ---
 
 async def handler(event, context):
-    print(f"[LOG] >>> NEW REQUEST. Method: {event.get('httpMethod')}")
+    print(f"[LOG] Raw event received: {event}")
+    method = event.get("httpMethod")
+    print(f"[LOG] >>> NEW REQUEST. Method: {method}")
     cors = {
-        'Access-Control-Allow-Origin': '*', 
-        'Access-Control-Allow-Headers': 'Content-Type', 
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Allow-Methods': 'POST, GET, OPTIONS'
     }
-    
-    if event['httpMethod'] == 'OPTIONS': 
+
+    if not method:
+        return {
+            "statusCode": 200,
+            "body": "ok",
+            "headers": {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "Content-Type",
+                "Access-Control-Allow-Methods": "POST, GET, OPTIONS"
+            }
+        }
+
+    if method == 'OPTIONS':
         return {'statusCode': 200, 'headers': cors, 'body': 'ok'}
 
     try:
