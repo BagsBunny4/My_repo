@@ -34,6 +34,8 @@ MOSCOW_TIMEZONE = pytz.timezone('Europe/Moscow')
 
 # --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ---
 YDB_DRIVER = None
+YDB_POOL = None
+SHEETS_SERVICE = None
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
@@ -58,10 +60,10 @@ def get_from_cache(key):
             del RAM_CACHE[key]
     return None
 
-def save_to_cache(key, data):
+def save_to_cache(key, data, ttl=None):
     RAM_CACHE[key] = {
         'data': data,
-        'expire': time.time() + CACHE_TTL
+        'expire': time.time() + (ttl if ttl is not None else CACHE_TTL)
     }
 
 def clear_user_cache(spreadsheet_id):
@@ -91,12 +93,18 @@ def get_ydb_driver():
             raise e
     return YDB_DRIVER
 
+def get_ydb_pool():
+    global YDB_POOL
+    if YDB_POOL is None:
+        driver = get_ydb_driver()
+        YDB_POOL = ydb.SessionPool(driver)
+    return YDB_POOL
+
 def execute_query(query):
-    driver = get_ydb_driver()
     def callee(session):
         session.transaction().execute(query, commit_tx=True)
-    with ydb.SessionPool(driver) as pool:
-        pool.retry_operation_sync(callee)
+    pool = get_ydb_pool()
+    pool.retry_operation_sync(callee)
 
 def get_safe_str(text):
     if text is None:
@@ -117,15 +125,14 @@ def save_user_data(telegram_id, spreadsheet_id, owner_id, first_name="User"):
     execute_query(query)
 
 def get_user_data(telegram_id):
-    driver = get_ydb_driver()
     tid = int(telegram_id)
     query = f"SELECT spreadsheet_id, owner_id FROM `users` WHERE telegram_id = {tid};"
     
     def callee(session):
         return session.transaction().execute(query, commit_tx=True)
         
-    with ydb.SessionPool(driver) as pool:
-        result_sets = pool.retry_operation_sync(callee)
+    pool = get_ydb_pool()
+    result_sets = pool.retry_operation_sync(callee)
         
     if result_sets and result_sets[0].rows:
         row = result_sets[0].rows[0]
@@ -141,15 +148,14 @@ def get_user_data(telegram_id):
     return None
 
 def create_default_categories(telegram_id):
-    driver = get_ydb_driver()
     tid = int(telegram_id)
     check_q = f"SELECT COUNT(*) as cnt FROM `categories` WHERE telegram_id = {tid};"
     
     def check_callee(session):
         return session.transaction().execute(check_q, commit_tx=True)
     
-    with ydb.SessionPool(driver) as pool:
-        res = pool.retry_operation_sync(check_callee)
+    pool = get_ydb_pool()
+    res = pool.retry_operation_sync(check_callee)
         
     if res[0].rows[0].cnt > 0:
         return 
@@ -183,11 +189,17 @@ def create_default_categories(telegram_id):
 def get_creds():
     return service_account.Credentials.from_service_account_file("key.json")
 
+def get_sheets_service():
+    global SHEETS_SERVICE
+    if SHEETS_SERVICE is None:
+        creds = get_creds()
+        SHEETS_SERVICE = build('sheets', 'v4', credentials=creds)
+    return SHEETS_SERVICE
+
 async def setup_sheet(spreadsheet_id):
     print(f"[LOG] Setting up sheet structure for {spreadsheet_id}")
     def run():
-        creds = get_creds()
-        service = build('sheets', 'v4', credentials=creds)
+        service = get_sheets_service()
         try:
             meta = service.spreadsheets().get(spreadsheetId=spreadsheet_id).execute()
         except Exception: 
@@ -500,14 +512,27 @@ async def sheet_handler(message: types.Message):
 # --- MAIN API HANDLER ---
 
 async def handler(event, context):
-    print(f"[LOG] >>> NEW REQUEST. Method: {event.get('httpMethod')}")
+    print(f"[LOG] Raw event received: {event}")
+    method = event.get("httpMethod")
+    print(f"[LOG] >>> NEW REQUEST. Method: {method}")
     cors = {
-        'Access-Control-Allow-Origin': '*', 
-        'Access-Control-Allow-Headers': 'Content-Type', 
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Allow-Methods': 'POST, GET, OPTIONS'
     }
-    
-    if event['httpMethod'] == 'OPTIONS': 
+
+    if not method:
+        return {
+            "statusCode": 200,
+            "body": "ok",
+            "headers": {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "Content-Type",
+                "Access-Control-Allow-Methods": "POST, GET, OPTIONS"
+            }
+        }
+
+    if method == 'OPTIONS':
         return {'statusCode': 200, 'headers': cors, 'body': 'ok'}
 
     try:
@@ -546,8 +571,7 @@ async def handler(event, context):
             oid = int(user_data['owner_id'])
             print(f"[LOG] Spreadsheet ID: {sid}, Owner ID: {oid}")
             
-            driver = get_ydb_driver()
-            pool = ydb.SessionPool(driver)
+            pool = get_ydb_pool()
             
             if action == 'update_structure':
                 await setup_sheet(sid)
@@ -555,9 +579,12 @@ async def handler(event, context):
                 return {'statusCode': 200, 'headers': cors, 'body': '{}'}
             
             if action == 'get_categories':
+                start = time.time()
                 cache_key = get_cache_key(sid, 'get_categories', {})
                 cached = get_from_cache(cache_key)
-                if cached: return {'statusCode': 200, 'headers': cors, 'body': json.dumps(cached)}
+                if cached:
+                    print(f"[PERF] get_categories took {time.time() - start:.3f} sec (cache)")
+                    return {'statusCode': 200, 'headers': cors, 'body': json.dumps(cached)}
                 
                 query = f"SELECT category_id, category_name, category_type FROM `categories` WHERE telegram_id = {oid};"
                 
@@ -577,7 +604,8 @@ async def handler(event, context):
                             cn, ct, ci = row.category_name, row.category_type, row.category_id
                         cats.append({"id": ci, "name": cn, "type": ct})
                 
-                save_to_cache(cache_key, cats)
+                save_to_cache(cache_key, cats, ttl=300)
+                print(f"[PERF] get_categories took {time.time() - start:.3f} sec")
                 return {'statusCode': 200, 'headers': cors, 'body': json.dumps(cats)}
 
             if action == 'add_category':
@@ -609,8 +637,7 @@ async def handler(event, context):
                 cached = get_from_cache(cache_key)
                 if cached: return {'statusCode': 200, 'headers': cors, 'body': json.dumps(cached)}
                 
-                creds = get_creds()
-                service = build('sheets', 'v4', credentials=creds)
+                service = get_sheets_service()
                 
                 try:
                     resp = service.spreadsheets().values().get(spreadsheetId=sid, range=f"'{TRANSACTIONS_SHEET_NAME}'!A2:C").execute()
@@ -643,8 +670,7 @@ async def handler(event, context):
                 return {'statusCode': 200, 'headers': cors, 'body': json.dumps(result)}
 
             if action == 'set_budget':
-                creds = get_creds()
-                service = build('sheets', 'v4', credentials=creds)
+                service = get_sheets_service()
                 
                 try:
                     resp = service.spreadsheets().values().get(spreadsheetId=sid, range=f"'{BUDGET_SHEET_NAME}'!A2:C").execute()
@@ -670,8 +696,7 @@ async def handler(event, context):
                 return {'statusCode': 200, 'headers': cors, 'body': '{}'}
 
             if action == 'get_settings':
-                creds = get_creds()
-                service = build('sheets', 'v4', credentials=creds)
+                service = get_sheets_service()
                 
                 try:
                     resp = service.spreadsheets().values().get(spreadsheetId=sid, range=f"'{BUDGET_SHEET_NAME}'!D2:E").execute()
@@ -686,8 +711,7 @@ async def handler(event, context):
                 return {'statusCode': 200, 'headers': cors, 'body': json.dumps(settings)}
 
             if action == 'set_setting':
-                creds = get_creds()
-                service = build('sheets', 'v4', credentials=creds)
+                service = get_sheets_service()
                 
                 try:
                     resp = service.spreadsheets().values().get(spreadsheetId=sid, range=f"'{BUDGET_SHEET_NAME}'!D2:E").execute()
@@ -717,8 +741,7 @@ async def handler(event, context):
                 cached = get_from_cache(cache_key)
                 if cached: return {'statusCode': 200, 'headers': cors, 'body': json.dumps(cached)}
                 
-                creds = get_creds()
-                service = build('sheets', 'v4', credentials=creds)
+                service = get_sheets_service()
                 
                 try:
                     resp = service.spreadsheets().values().get(spreadsheetId=sid, range=f"'{SUBSCRIPTIONS_SHEET_NAME}'!A2:F").execute()
@@ -734,8 +757,7 @@ async def handler(event, context):
                 return {'statusCode': 200, 'headers': cors, 'body': json.dumps(subs)}
 
             if action == 'add_subscription':
-                creds = get_creds()
-                service = build('sheets', 'v4', credentials=creds)
+                service = get_sheets_service()
                 
                 new_row = [payload['name'], float(payload['amount']), payload['category'], int(payload['day']), "-", str(uuid.uuid4())]
                 service.spreadsheets().values().append(spreadsheetId=sid, range=f"'{SUBSCRIPTIONS_SHEET_NAME}'", valueInputOption='USER_ENTERED', body={'values': [new_row]}).execute()
@@ -743,8 +765,7 @@ async def handler(event, context):
                 return {'statusCode': 200, 'headers': cors, 'body': '{}'}
 
             if action == 'delete_subscription':
-                creds = get_creds()
-                service = build('sheets', 'v4', credentials=creds)
+                service = get_sheets_service()
                 
                 rows = service.spreadsheets().values().get(spreadsheetId=sid, range=f"'{SUBSCRIPTIONS_SHEET_NAME}'!F:F").execute().get('values', [])
                 target_id = str(payload['id']).strip()
@@ -759,8 +780,7 @@ async def handler(event, context):
                 return {'statusCode': 200, 'headers': cors, 'body': '{}'}
 
             if action == 'add_transaction':
-                creds = get_creds()
-                service = build('sheets', 'v4', credentials=creds)
+                service = get_sheets_service()
                 
                 amount = float(payload['amount'])
                 final_amount = -abs(amount) if payload['type'] == 'expense' else abs(amount)
@@ -782,8 +802,7 @@ async def handler(event, context):
                 return {'statusCode': 200, 'headers': cors, 'body': '{}'}
             
             if action == 'delete_transaction':
-                creds = get_creds()
-                service = build('sheets', 'v4', credentials=creds)
+                service = get_sheets_service()
                 
                 rows = service.spreadsheets().values().get(spreadsheetId=sid, range=f"'{TRANSACTIONS_SHEET_NAME}'!G:G").execute().get('values', [])
                 target_id = str(payload['id']).strip()
@@ -805,8 +824,7 @@ async def handler(event, context):
                 return {'statusCode': 200, 'headers': cors, 'body': '{}'}
 
             if action == 'edit_transaction':
-                creds = get_creds()
-                service = build('sheets', 'v4', credentials=creds)
+                service = get_sheets_service()
                 
                 rows = service.spreadsheets().values().get(spreadsheetId=sid, range=f"'{TRANSACTIONS_SHEET_NAME}'!G:G").execute().get('values', [])
                 target_id = str(payload['id']).strip()
@@ -843,12 +861,14 @@ async def handler(event, context):
                 return {'statusCode': 200, 'headers': cors, 'body': '{}'}
 
             if action == 'get_wallets':
+                start = time.time()
                 cache_key = get_cache_key(sid, 'get_wallets', {})
                 cached = get_from_cache(cache_key)
-                if cached: return {'statusCode': 200, 'headers': cors, 'body': json.dumps(cached)}
-                
-                creds = get_creds()
-                service = build('sheets', 'v4', credentials=creds)
+                if cached:
+                    print(f"[PERF] get_wallets took {time.time() - start:.3f} sec (cache)")
+                    return {'statusCode': 200, 'headers': cors, 'body': json.dumps(cached)}
+
+                service = get_sheets_service()
                 
                 try:
                     res = service.spreadsheets().values().batchGet(spreadsheetId=sid, ranges=[f"'{WALLETS_SHEET_NAME}'!A2:E", f"'{DEBTS_SHEET_NAME}'!A2:E"]).execute()
@@ -877,12 +897,12 @@ async def handler(event, context):
                     except: continue
                 
                 result = {"wallets": wallets, "net_worth": total_cash + total_owed_me - total_i_owe}
-                save_to_cache(cache_key, result)
+                save_to_cache(cache_key, result, ttl=30)
+                print(f"[PERF] get_wallets took {time.time() - start:.3f} sec")
                 return {'statusCode': 200, 'headers': cors, 'body': json.dumps(result)}
 
             if action == 'manage_wallet':
-                creds = get_creds()
-                service = build('sheets', 'v4', credentials=creds)
+                service = get_sheets_service()
                 
                 if payload.get('type') == 'add':
                     is_default = payload.get('is_default', False)
@@ -899,8 +919,7 @@ async def handler(event, context):
                 return {'statusCode': 200, 'headers': cors, 'body': '{}'}
 
             if action == 'reconcile_wallet':
-                creds = get_creds()
-                service = build('sheets', 'v4', credentials=creds)
+                service = get_sheets_service()
                 
                 w_uuid = payload['wallet_uuid']; actual = float(payload['actual_balance'])
                 rows = service.spreadsheets().values().get(spreadsheetId=sid, range=f"'{WALLETS_SHEET_NAME}'!A2:E").execute().get('values', [])
@@ -924,8 +943,7 @@ async def handler(event, context):
                 return {'statusCode': 200, 'headers': cors, 'body': '{}'}
 
             if action == 'transfer_between_wallets':
-                creds = get_creds()
-                service = build('sheets', 'v4', credentials=creds)
+                service = get_sheets_service()
                 
                 from_uuid = payload['from_wallet']; to_uuid = payload['to_wallet']; amt = abs(float(payload['amount']))
                 d_str = payload.get('date'); fd = (datetime.strptime(d_str, '%Y-%m-%d').strftime('%d.%m.%Y') + datetime.now(MOSCOW_TIMEZONE).strftime(' %H:%M:%S')) if d_str else datetime.now(MOSCOW_TIMEZONE).strftime('%d.%m.%Y %H:%M:%S')
@@ -942,8 +960,7 @@ async def handler(event, context):
 
             if action == 'manage_debt':
                 print(f"[LOG] manage_debt payload: {payload}")
-                creds = get_creds()
-                service = build('sheets', 'v4', credentials=creds)
+                service = get_sheets_service()
                 op_type = payload.get('type')
                 
                 if op_type == 'add':
@@ -1018,8 +1035,7 @@ async def handler(event, context):
                 cached = get_from_cache(cache_key)
                 if cached: return {'statusCode': 200, 'headers': cors, 'body': json.dumps(cached)}
 
-                creds = get_creds()
-                service = build('sheets', 'v4', credentials=creds)
+                service = get_sheets_service()
                 
                 # Fetch Debts, Wallets, and Settings in one batch
                 try:
@@ -1086,8 +1102,7 @@ async def handler(event, context):
                 cache_key = get_cache_key(sid, 'get_history', payload)
                 cached = get_from_cache(cache_key)
                 if cached: return {'statusCode': 200, 'headers': cors, 'body': json.dumps(cached)}
-                creds = get_creds()
-                service = build('sheets', 'v4', credentials=creds)
+                service = get_sheets_service()
                 offset = int(payload.get('offset', 0)); limit = 20
                 rows = service.spreadsheets().values().get(spreadsheetId=sid, range=f"'{TRANSACTIONS_SHEET_NAME}'!A2:G").execute().get('values', [])
                 hist = []
@@ -1107,13 +1122,23 @@ async def handler(event, context):
                 return {'statusCode': 200, 'headers': cors, 'body': json.dumps(chunk)}
 
             if action == 'get_summary':
+                start = time.time()
                 cache_key = get_cache_key(sid, 'get_summary', payload)
                 cached = get_from_cache(cache_key)
-                if cached: return {'statusCode': 200, 'headers': cors, 'body': json.dumps(cached)}
+                if cached:
+                    print(f"[PERF] get_summary took {time.time() - start:.3f} sec (cache)")
+                    return {'statusCode': 200, 'headers': cors, 'body': json.dumps(cached)}
 
-                creds = get_creds()
-                service = build('sheets', 'v4', credentials=creds)
-                has_sub_updates = await process_subscriptions(service, sid)
+                service = get_sheets_service()
+                today_str = datetime.now(MOSCOW_TIMEZONE).date().isoformat()
+                sub_run_key = f"{sid}:subscriptions_last_run"
+                last_run = get_from_cache(sub_run_key)
+                has_sub_updates = False
+                if last_run != today_str:
+                    has_sub_updates = await process_subscriptions(service, sid)
+                    save_to_cache(sub_run_key, today_str, ttl=86400)
+                if has_sub_updates:
+                    print("[LOG] Subscriptions updated during summary calculation")
                 
                 ranges = [f"'{TRANSACTIONS_SHEET_NAME}'!A2:G", f"'{BUDGET_SHEET_NAME}'!A2:B"]
                 try: resp = service.spreadsheets().values().batchGet(spreadsheetId=sid, ranges=ranges).execute()
@@ -1179,7 +1204,8 @@ async def handler(event, context):
                     analytics = {"daily_avg": int(daily_avg), "monthly_forecast": int(daily_avg * days_in_month)}
 
                 res_data = {"balance": bal, "income": inc, "expense": exp, "breakdown": breakdown, "history": hist[:20], "has_more": len(hist) > 20, "analytics": analytics}
-                if not has_sub_updates: save_to_cache(cache_key, res_data)
+                save_to_cache(cache_key, res_data, ttl=30)
+                print(f"[PERF] get_summary took {time.time() - start:.3f} sec")
                 return {'statusCode': 200, 'headers': cors, 'body': json.dumps(res_data)}
 
             # --- CALCULATE EXPENSE IMPACT (v3.5) ---
@@ -1188,8 +1214,7 @@ async def handler(event, context):
                 if amount_to_check <= 0:
                     return {'statusCode': 200, 'headers': cors, 'body': json.dumps({'days_delayed': 0, 'interest_cost': 0, 'percentage': 0, 'total_debt': 0})}
 
-                creds = get_creds()
-                service = build('sheets', 'v4', credentials=creds)
+                service = get_sheets_service()
                 
                 # 1. Fetch current debts
                 try:
