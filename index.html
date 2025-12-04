@@ -287,22 +287,71 @@
         .navbar-item span { font-size: 10px; font-weight: 500; }
 
         .btn-sim {
-            display: inline-flex;
+            position: relative;
+            display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
+            gap: 12px;
             width: 100%;
-            padding: 14px 16px;
-            color: #0f1116;
-            font-weight: 700;
-            border-radius: 16px;
-            background: linear-gradient(135deg, #ffe07a 0%, #ffb866 100%);
-            border: 1.5px solid rgba(255, 184, 102, 0.65);
-            box-shadow: 0 12px 30px rgba(255, 184, 102, 0.3);
-            transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            padding: 16px 18px;
+            border-radius: 18px;
+            isolation: isolate;
+            background: linear-gradient(160deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+            color: #fdfdfd;
+            border: 1.5px solid rgba(255, 255, 255, 0.06);
+            box-shadow:
+                0 18px 38px rgba(0, 0, 0, 0.45),
+                0 10px 30px rgba(108, 166, 255, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+            transition: transform 0.16s ease, box-shadow 0.25s ease, border-color 0.2s ease;
         }
-        .btn-sim:hover { box-shadow: 0 16px 36px rgba(255, 184, 102, 0.38); border-color: rgba(255, 222, 173, 0.8); }
-        .btn-sim:active { transform: translateY(1px); box-shadow: 0 10px 24px rgba(255, 184, 102, 0.25); }
+        .btn-sim::before {
+            content: "";
+            position: absolute;
+            inset: -1.5px;
+            border-radius: 19px;
+            background: linear-gradient(120deg, #72ffd5, #7fa8ff, #ffb877);
+            opacity: 0.75;
+            filter: blur(12px);
+            z-index: 0;
+            transition: opacity 0.2s ease, filter 0.2s ease;
+        }
+        .btn-sim::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 18px;
+            background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.12), transparent 40%),
+                        linear-gradient(135deg, rgba(114, 255, 213, 0.18), rgba(127, 168, 255, 0.18), rgba(255, 184, 119, 0.18));
+            z-index: 0;
+            pointer-events: none;
+        }
+        .btn-sim:hover {
+            box-shadow:
+                0 22px 46px rgba(0, 0, 0, 0.55),
+                0 16px 38px rgba(114, 255, 213, 0.16),
+                inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            border-color: rgba(114, 255, 213, 0.6);
+        }
+        .btn-sim:hover::before { opacity: 0.92; filter: blur(10px); }
+        .btn-sim:active { transform: translateY(1px); box-shadow: 0 14px 26px rgba(0, 0, 0, 0.45); }
+        .btn-sim .btn-sim-icon {
+            position: relative;
+            z-index: 1;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(114, 255, 213, 0.18), rgba(127, 168, 255, 0.22));
+            display: grid;
+            place-items: center;
+            color: #0f1116;
+            font-size: 20px;
+            font-weight: 700;
+            box-shadow: 0 12px 24px rgba(127, 168, 255, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        }
+        .btn-sim .btn-sim-text { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 4px; }
+        .btn-sim .btn-sim-title { font-size: 1.05rem; font-weight: 700; letter-spacing: 0.02em; }
+        .btn-sim .btn-sim-subtitle { font-size: 0.9rem; color: rgba(245, 246, 248, 0.72); font-weight: 500; letter-spacing: 0.01em; }
 
         .button-primary {
             width: 100%; background: linear-gradient(135deg, rgba(108, 166, 255, 0.95), rgba(201, 169, 255, 0.85)); color: white; border: none;
@@ -898,8 +947,12 @@
                 </div>
                 
                 <div style="margin-bottom:20px;">
-                    <div class="btn-sim" onclick="openSim()" style="width:100%; justify-content:center; padding:12px;">
-                        ⚡️ Запустить симулятор
+                    <div class="btn-sim" onclick="openSim()">
+                        <div class="btn-sim-icon">⚡️</div>
+                        <div class="btn-sim-text">
+                            <div class="btn-sim-title">Запустить симулятор</div>
+                            <div class="btn-sim-subtitle">смоделировать выплату сейчас</div>
+                        </div>
                     </div>
                 </div>
 
