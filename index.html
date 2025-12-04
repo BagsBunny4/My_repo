@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -6,6 +7,38 @@
     <title>Finance Premium</title>
     <!-- Подключение Telegram Web Apps API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        :root {
+            /* --- ЦВЕТОВАЯ ПАЛИТРА --- */
+            --background-color: #050608;
+            --background-glow: radial-gradient(circle at 20% 20%, rgba(90, 132, 255, 0.12), transparent 35%),
+                radial-gradient(circle at 80% 0%, rgba(255, 120, 80, 0.12), transparent 30%),
+                #050608;
+            --card-background: rgba(20, 22, 26, 0.85);
+            --card-elevated: rgba(24, 26, 30, 0.9);
+            --modal-background: rgba(18, 19, 22, 0.94);
+            --text-primary: #F5F6F8;
+            --text-secondary: #9AA0AA;
+            --separator-color: rgba(255, 255, 255, 0.08);
+            --row-active-bg: rgba(255, 255, 255, 0.04);
+
+            /* Акцентные цвета */
+            --accent-blue: #6CA6FF;
+            --accent-green: #3DD6A0;
+            --accent-red: #FF6B6B;
+            --accent-orange: #FFB866;
+            --accent-yellow: #FFE38C;
+            --accent-purple: #C9A9FF;
+
+            /* Безопасные зоны */
+            --safe-area-top: env(safe-area-inset-top, 20px);
+            --safe-area-bottom: env(safe-area-inset-bottom, 20px);
+
+            /* Тени и радиусы */
+            --card-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+            --card-radius: 16px;
+        }
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         :root {
@@ -52,11 +85,34 @@
             overflow: hidden;
             overflow-x: hidden; /* Added to prevent horizontal overflow */
         }
+        html, body {
+            margin: 0; padding: 0;
+            background: var(--background-glow);
+            color: var(--text-primary);
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+            letter-spacing: 0.01em;
+            height: 100vh;
+            overflow: hidden;
+            overflow-x: hidden; /* Added to prevent horizontal overflow */
+        }
 
         #app-container {
             display: flex; flex-direction: column; height: 100%; width: 100%; position: relative;
         }
 
+        .scrollable-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            width: 100vw; /* Фикс ширины */
+            -webkit-overflow-scrolling: touch;
+            padding-top: calc(var(--safe-area-top) + 10px);
+            padding-bottom: calc(85px + var(--safe-area-bottom));
+            padding-left: 18px;
+            padding-right: 18px;
+            max-width: 720px;
+            margin: 0 auto;
+        }
         .scrollable-content {
             flex: 1;
             overflow-y: auto;
@@ -83,6 +139,8 @@
         /* --- ТИПОГРАФИКА --- */
         h1 { font-size: 2rem; font-weight: 700; margin: 0 0 20px 0; letter-spacing: 0.35px; }
         h2 { font-size: 0.8125rem; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; margin: 28px 0 8px 16px; letter-spacing: 0.08em; }
+        h1 { font-size: 2rem; font-weight: 700; margin: 0 0 20px 0; letter-spacing: 0.35px; }
+        h2 { font-size: 0.8125rem; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; margin: 28px 0 8px 16px; letter-spacing: 0.08em; }
         
         /* Стили заголовков для настроек */
         .settings-header-label {
@@ -95,6 +153,37 @@
         }
 
         /* --- КАРТОЧКИ --- */
+        .card-container {
+            background: var(--card-background);
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .target-debt-card {
+            border: 1px solid rgba(255, 184, 102, 0.4);
+            box-shadow: 0 16px 40px rgba(255, 184, 102, 0.18);
+            background: linear-gradient(135deg, rgba(255, 184, 102, 0.12), rgba(255, 135, 80, 0.08))
+                , var(--card-background);
+        }
+
+        .list-item-row {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* Changed from space-between */
+            flex-wrap: wrap; /* Added for adaptability */
+            padding: 14px 18px;
+            min-height: 56px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 80%), var(--card-background);
+            position: relative;
+            transition: background 0.2s ease, transform 0.15s ease;
+        }
+        
+        .list-item-row.is-focused { background-color: var(--row-active-bg); }
+        .list-item-row:active { background-color: var(--row-active-bg); transform: translateY(1px); }
         .card-container {
             background: var(--card-background);
             border-radius: var(--card-radius);
@@ -196,6 +285,12 @@
         .date-nav-button:active { background: rgba(255, 255, 255, 0.1); }
         .date-nav-label { font-size: 0.9375rem; font-weight: 600; color: var(--text-primary); text-transform: capitalize; }
 
+      .balance-display-card {
+            background: linear-gradient(135deg, rgba(108, 166, 255, 0.12), rgba(201, 169, 255, 0.08)), var(--card-elevated);
+            border-radius: var(--card-radius); padding: 24px; text-align: center; margin-bottom: 16px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
         .balance-display-card {
             background: linear-gradient(135deg, rgba(108, 166, 255, 0.12), rgba(201, 169, 255, 0.08)), var(--card-elevated);
             border-radius: var(--card-radius); padding: 24px; text-align: center; margin-bottom: 16px;
@@ -239,6 +334,16 @@
             border-radius: 9px; cursor: pointer; color: var(--text-primary); transition: all 0.2s;
         }
         .segment-button.active { background: rgba(255, 255, 255, 0.08); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05); }
+        .segment-control-container {
+            background: rgba(255, 255, 255, 0.04); padding: 2px; border-radius: 12px;
+            display: flex; margin: 0 auto 24px; width: 100%; max-width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .segment-button {
+            flex: 1; text-align: center; padding: 9px; font-size: 0.875rem; font-weight: 600;
+            border-radius: 9px; cursor: pointer; color: var(--text-primary); transition: all 0.2s;
+        }
+        .segment-button.active { background: rgba(255, 255, 255, 0.08); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05); }
 
         /* --- ГРАФИКИ --- */
         .chart-container-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
@@ -259,6 +364,9 @@
         .limit-info { font-size: 11px; color: var(--text-secondary); margin-top: 5px; display: flex; justify-content: space-between; }
         .interactive-row { cursor: pointer; transition: transform 0.1s, background-color 0.2s; }
         .interactive-row:active { transform: scale(0.98); background-color: rgba(255, 255, 255, 0.05) !important; }
+
+        /* Универсальный курсор для кликабельных элементов */
+        [onclick] { cursor: pointer; }
 
         /* Универсальный курсор для кликабельных элементов */
         [onclick] { cursor: pointer; }
@@ -290,69 +398,68 @@
             position: relative;
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             width: 100%;
-            padding: 18px 20px;
+            padding: 16px 18px;
             border-radius: 18px;
             isolation: isolate;
-            background: linear-gradient(150deg, rgba(20, 24, 32, 0.85), rgba(26, 30, 40, 0.9));
+            background: linear-gradient(160deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
             color: #fdfdfd;
-            border: 1.5px solid rgba(114, 255, 213, 0.2);
+            border: 1.5px solid rgba(255, 255, 255, 0.06);
             box-shadow:
-                0 14px 30px rgba(0, 0, 0, 0.42),
-                0 18px 40px rgba(127, 168, 255, 0.18);
+                0 18px 38px rgba(0, 0, 0, 0.45),
+                0 10px 30px rgba(108, 166, 255, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
             overflow: hidden;
-            transition: transform 0.16s ease, box-shadow 0.25s ease, border-color 0.2s ease, background 0.25s ease;
+            transition: transform 0.16s ease, box-shadow 0.25s ease, border-color 0.2s ease;
         }
         .btn-sim::before {
             content: "";
             position: absolute;
-            inset: 0;
-            border-radius: 18px;
-            background: linear-gradient(120deg, rgba(114, 255, 213, 0.16), rgba(127, 168, 255, 0.16), rgba(255, 184, 119, 0.12));
-            opacity: 0.9;
+            inset: -1.5px;
+            border-radius: 19px;
+            background: linear-gradient(120deg, #72ffd5, #7fa8ff, #ffb877);
+            opacity: 0.75;
+            filter: blur(12px);
             z-index: 0;
-            pointer-events: none;
+            transition: opacity 0.2s ease, filter 0.2s ease;
         }
         .btn-sim::after {
             content: "";
             position: absolute;
-            inset: 1px;
-            border-radius: 16px;
-            background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.11), transparent 38%),
-                        linear-gradient(135deg, rgba(114, 255, 213, 0.32), rgba(127, 168, 255, 0.28));
+            inset: 0;
+            border-radius: 18px;
+            background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.12), transparent 40%),
+                        linear-gradient(135deg, rgba(114, 255, 213, 0.18), rgba(127, 168, 255, 0.18), rgba(255, 184, 119, 0.18));
             z-index: 0;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            pointer-events: none;
         }
         .btn-sim:hover {
             box-shadow:
-                0 18px 42px rgba(0, 0, 0, 0.5),
-                0 20px 46px rgba(127, 168, 255, 0.22);
-            border-color: rgba(114, 255, 213, 0.55);
-            background: linear-gradient(150deg, rgba(24, 28, 36, 0.95), rgba(30, 34, 44, 0.94));
+                0 22px 46px rgba(0, 0, 0, 0.55),
+                0 16px 38px rgba(114, 255, 213, 0.16),
+                inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            border-color: rgba(114, 255, 213, 0.6);
         }
-        .btn-sim:active {
-            transform: translateY(1px);
-            box-shadow: 0 12px 26px rgba(0, 0, 0, 0.45);
-        }
+        .btn-sim:hover::before { opacity: 0.92; filter: blur(10px); }
+        .btn-sim:active { transform: translateY(1px); box-shadow: 0 14px 26px rgba(0, 0, 0, 0.45); }
         .btn-sim .btn-sim-icon {
             position: relative;
             z-index: 1;
-            width: 46px;
-            height: 46px;
-            border-radius: 14px;
-            background: linear-gradient(145deg, #0af, #7fffd5);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(114, 255, 213, 0.18), rgba(127, 168, 255, 0.22));
             display: grid;
             place-items: center;
-            color: #0b0f16;
+            color: #0f1116;
             font-size: 20px;
-            font-weight: 800;
-            box-shadow: 0 12px 24px rgba(114, 255, 213, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.28);
-            border: 1px solid rgba(12, 179, 255, 0.35);
+            font-weight: 700;
+            box-shadow: 0 12px 24px rgba(127, 168, 255, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.25);
         }
-        .btn-sim .btn-sim-text { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 6px; }
-        .btn-sim .btn-sim-title { font-size: 1.1rem; font-weight: 800; letter-spacing: 0.015em; }
-        .btn-sim .btn-sim-subtitle { font-size: 0.92rem; color: rgba(245, 246, 248, 0.74); font-weight: 600; letter-spacing: 0.01em; }
+        .btn-sim .btn-sim-text { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 4px; }
+        .btn-sim .btn-sim-title { font-size: 1.05rem; font-weight: 700; letter-spacing: 0.02em; }
+        .btn-sim .btn-sim-subtitle { font-size: 0.9rem; color: rgba(245, 246, 248, 0.72); font-weight: 500; letter-spacing: 0.01em; }
 
         .button-primary {
             width: 100%; background: linear-gradient(135deg, rgba(108, 166, 255, 0.95), rgba(201, 169, 255, 0.85)); color: white; border: none;
@@ -456,6 +563,30 @@
             background: rgba(118, 118, 128, 0.12); border-radius: 8px;
         }
         .load-more-btn:active { background: rgba(118, 118, 128, 0.2); }
+
+        /* SETTINGS */
+        .settings-section { margin-bottom: 20px; }
+        .settings-card { background: var(--card-background); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); box-shadow: var(--card-shadow); overflow: hidden; }
+        .settings-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; gap: 12px; }
+        .settings-row + .settings-row { border-top: 1px solid var(--separator-color); }
+        .settings-label-block { display: flex; align-items: center; gap: 12px; }
+        .settings-icon { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; color: #fff; font-size: 18px; }
+        .settings-title { font-size: 1rem; font-weight: 600; color: #fff; }
+        .settings-hint { font-size: 13px; color: var(--text-secondary); }
+        .settings-arrow { color: var(--text-secondary); font-size: 18px; }
+        .settings-note { font-size: 13px; color: var(--text-secondary); line-height: 1.5; padding: 0 4px 8px 4px; }
+
+        /* SETTINGS */
+        .settings-section { margin-bottom: 20px; }
+        .settings-card { background: var(--card-background); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); box-shadow: var(--card-shadow); overflow: hidden; }
+        .settings-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; gap: 12px; }
+        .settings-row + .settings-row { border-top: 1px solid var(--separator-color); }
+        .settings-label-block { display: flex; align-items: center; gap: 12px; }
+        .settings-icon { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; color: #fff; font-size: 18px; }
+        .settings-title { font-size: 1rem; font-weight: 600; color: #fff; }
+        .settings-hint { font-size: 13px; color: var(--text-secondary); }
+        .settings-arrow { color: var(--text-secondary); font-size: 18px; }
+        .settings-note { font-size: 13px; color: var(--text-secondary); line-height: 1.5; padding: 0 4px 8px 4px; }
 
         /* SETTINGS */
         .settings-section { margin-bottom: 20px; }
@@ -706,6 +837,82 @@
         <button onclick="Telegram.WebApp.close()" class="button-primary" style="width:auto;padding:12px 40px;">Закрыть</button>
     </div>
 
+    <!-- IMPULSE BUY MODAL -->
+    <div id="impulse-modal" class="modal-overlay">
+        <div class="modal-content-sheet">
+            <div class="modal-handle"></div>
+            <div class="modal-topbar">
+                <div>
+                    <h2 class="modal-heading">Проверка желания 🛍</h2>
+                    <p class="modal-subheading">Быстро оценим цену импульса</p>
+                </div>
+                <div class="modal-close" onclick="closeImpulseModal()">Закрыть</div>
+            </div>
+
+            <div class="modal-body">
+                <label class="modal-label">Сколько стоит вещь?</label>
+                <div class="modal-input-wrap">
+                    <input type="number" id="input-impulse-amount" class="modal-input" placeholder="0" oninput="checkImpulse(this.value)">
+                    <span style="color: var(--text-secondary); font-size: 18px;">₽</span>
+                </div>
+
+                <div id="impulse-loading" class="hidden" style="text-align:center; color:var(--text-secondary);">Считаю последствия...</div>
+
+                <div id="impulse-results" class="hidden" style="display:flex; flex-direction:column; gap:12px;">
+                    <div class="modal-card">
+                        <div class="impulse-stat-row">
+                            <span style="color:var(--text-secondary)">Это от общего долга:</span>
+                            <span id="impulse-res-percent" class="impulse-stat-val">0%</span>
+                        </div>
+                        <div class="impulse-stat-row">
+                            <span style="color:var(--text-secondary)">Потерянные деньги (%):</span>
+                            <span id="impulse-res-lost" class="impulse-stat-val" style="color:#FF6B6B">0 ₽</span>
+                        </div>
+                        <div class="impulse-warning" id="impulse-res-text">
+                            Эта покупка отодвинет вашу свободу на 5 дней.
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button class="ghost-button" onclick="proceedToBuy()">Всё равно купить</button>
+                        <button class="ghost-button primary" onclick="proceedToRepay()">Погасить долг</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIMULATOR MODAL -->
+    <div id="sim-modal" class="modal-overlay">
+        <div class="modal-content-sheet">
+            <div class="modal-handle"></div>
+            <div class="modal-topbar">
+                <div>
+                    <h2 class="modal-heading">Ускоритель 🚀</h2>
+                    <p class="modal-subheading">Сколько добавим к платежу?</p>
+                </div>
+                <div class="modal-close" onclick="closeSim()">Готово</div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-card" style="text-align:center; gap:8px; display:flex; flex-direction:column; align-items:center;">
+                    <div class="modal-label" style="margin:0;">Ежемесячная надбавка</div>
+                    <div id="sim-display-amount" class="sim-value-large">+ 0 ₽</div>
+                    <input type="range" id="sim-slider" min="0" max="50000" step="1000" value="0" oninput="updateSimulator(this.value)" class="premium-slider">
+                </div>
+                <div class="modal-card" style="display:flex; justify-content:space-between; align-items:center; gap:16px;">
+                    <div>
+                        <div class="sim-label">Новая дата свободы</div>
+                        <div id="sim-res-date" class="sim-data">...</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="sim-label">Выгода</div>
+                        <div id="sim-res-saved" class="sim-data sim-better">0 ₽</div>
+                    </div>
+                </div>
+                <div style="font-size:12px; color:var(--text-secondary); text-align:center; line-height:1.5;">Передвигая ползунок, вы видите, как дополнительные вложения сокращают срок кредита.</div>
+            </div>
+        </div>
+    </div>
     <!-- IMPULSE BUY MODAL -->
     <div id="impulse-modal" class="modal-overlay">
         <div class="modal-content-sheet">
