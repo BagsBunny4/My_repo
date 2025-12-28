@@ -135,6 +135,29 @@
       gap:10px;
       flex-wrap:wrap;
     }
+    .infobar{
+      margin-top:12px;
+      padding:12px 14px;
+      border:1px dashed #23324a;
+      border-radius:16px;
+      background: rgba(15,23,34,.65);
+      color:var(--muted);
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .infobar .flag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:12px;
+      border:1px solid #2a3b52;
+      background: rgba(9,14,21,.55);
+      color:var(--text);
+      font-size:12.5px;
+    }
     .tab{
       user-select:none;
       padding:10px 12px;
@@ -180,6 +203,39 @@
       gap:10px;
     }
     .card h2 span.small{font-size:12px;color:var(--muted);font-weight:500}
+    .tip{
+      position:relative;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 8px;
+      border-radius:12px;
+      border:1px dashed #2a3b52;
+      color:var(--muted);
+      font-size:11.5px;
+      cursor:help;
+      user-select:none;
+    }
+    .tip::after{
+      content: attr(data-tip);
+      position:absolute;
+      left:0;
+      top:110%;
+      min-width:240px;
+      max-width:360px;
+      white-space:normal;
+      background: rgba(15,23,34,.95);
+      border:1px solid #2a3b52;
+      border-radius:12px;
+      padding:10px 12px;
+      box-shadow: 0 12px 30px rgba(0,0,0,.45);
+      opacity:0;
+      transform: translateY(-4px);
+      transition: opacity .15s ease, transform .15s ease;
+      pointer-events:none;
+      z-index:20;
+    }
+    .tip:hover::after{opacity:1; transform: translateY(0);}
     .muted{color:var(--muted)}
     .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
     .field{
@@ -360,6 +416,12 @@
       <div class="tab" data-tab="sheet">🧩 Таблица</div>
     </div>
 
+    <div class="infobar">
+      <div class="flag">🎯 Наведитесь на значок ℹ️ — везде подсказки для клиента.</div>
+      <div class="flag">🧭 Покажите оба сценария: Владелец ↔ Сотрудник (переключение ниже).</div>
+      <div class="flag">🗂️ Вкладка «Таблица» показывает архитектуру хранения и Google Sheets.</div>
+    </div>
+
     <!-- CONTENT -->
     <div id="content"></div>
 
@@ -497,7 +559,7 @@
     $("#content").innerHTML = `
       <div class="grid">
         <div class="card">
-            <h2>Добавить доход <span class="small">Выплата от приёмки по гео • ${state.currency}</span></h2>
+            <h2>Добавить доход <span class="small">Выплата от приёмки по гео • ${state.currency}</span> <span class="tip" data-tip="Покажите путь сотрудника: выбирает дату, приёмку, гео, сумму и ставит галочку получения. В реальной версии запись уходит в Sheets и логируется.">ℹ️</span></h2>
           <div class="row">
             <div class="field">
               <div class="label">Дата выплаты</div>
@@ -537,7 +599,7 @@
         </div>
 
         <div class="card">
-          <h2>Справочник приёмок <span class="small">динамический</span></h2>
+          <h2>Справочник приёмок <span class="small">динамический</span> <span class="tip" data-tip="Владелец управляет доступными приёмками и гео. Покажите, что список легко дополнять без доработки интерфейса.">ℹ️</span></h2>
           ${renderCatalogMini()}
           <div class="sep"></div>
           <div class="notice">
@@ -547,7 +609,7 @@
       </div>
 
       <div class="card" style="margin-top:14px;">
-        <h2>Журнал доходов <span class="small">пример данных</span></h2>
+        <h2>Журнал доходов <span class="small">пример данных</span> <span class="tip" data-tip="Быстрый обзор поступлений: сортировка по дате, кто поменял статус и сумма. В реальной версии — запись в Google Sheets + логи в Telegram." >ℹ️</span></h2>
         ${renderIncomeTable()}
       </div>
     `;
@@ -710,7 +772,7 @@
     $("#content").innerHTML = `
       <div class="grid">
         <div class="card">
-          <h2>Добавить расход <span class="small">Все расходы считаются оплаченными • ${state.currency}</span></h2>
+          <h2>Добавить расход <span class="small">Все расходы считаются оплаченными • ${state.currency}</span> <span class="tip" data-tip="Путь сотрудника: фиксирует дату, категорию, сумму и комментарий. Покажите, что статус «оплачено» ставится автоматически.">ℹ️</span></h2>
           <div class="row">
             <div class="field">
               <div class="label">Дата</div>
@@ -744,7 +806,7 @@
         </div>
 
         <div class="card">
-          <h2>Категории <span class="small">динамический справочник</span></h2>
+          <h2>Категории <span class="small">динамический справочник</span> <span class="tip" data-tip="Владелец расширяет список под бизнес. Добавление/удаление категорий логируется и не требует релиза.">ℹ️</span></h2>
           <div class="row">
             ${state.expenseCategories.map(c=>`<span class="chip">${c}</span>`).join("")}
           </div>
@@ -756,7 +818,7 @@
       </div>
 
       <div class="card" style="margin-top:14px;">
-        <h2>Журнал расходов <span class="small">пример данных</span></h2>
+        <h2>Журнал расходов <span class="small">пример данных</span> <span class="tip" data-tip="Расходы можно править и удалять всегда. Покажите редактирование вживую: клиент увидит автора и время изменения.">ℹ️</span></h2>
         ${renderExpenseTable()}
       </div>
     `;
@@ -851,7 +913,7 @@
     $("#content").innerHTML = `
       <div class="grid">
         <div class="card">
-          <h2>Неделя (Пн–Вс) <span class="small">${start} → ${end}</span></h2>
+          <h2>Неделя (Пн–Вс) <span class="small">${start} → ${end}</span> <span class="tip" data-tip="Как читать: период всегда понедельник-воскресенье. Покажите клиенту три числа: доход, расход, чистый результат.">ℹ️</span></h2>
           <div class="kpi">
             <div class="box">
               <div class="val">${fmtMoney(incomeSum)}</div>
@@ -882,19 +944,19 @@
         </div>
 
         <div class="card">
-          <h2>Логи действий <span class="small">в реале → отдельный Telegram-канал</span></h2>
+          <h2>Логи действий <span class="small">в реале → отдельный Telegram-канал</span> <span class="tip" data-tip="Для владельца: прозрачность. Любое изменение (галочка, новый расход) дублируется в лог-канал и таблицу.">ℹ️</span></h2>
           ${renderLogsMini()}
         </div>
       </div>
 
       <div class="grid" style="margin-top:14px;">
         <div class="card">
-          <h2>Детализация доходов <span class="small">по приёмкам</span></h2>
+          <h2>Детализация доходов <span class="small">по приёмкам</span> <span class="tip" data-tip="Для разговора: какие приёмки дают максимум? Числа собираются из тех же данных, что и таблица.">ℹ️</span></h2>
           ${renderKVTable(byIntake, "Приёмка", "Сумма")}
         </div>
 
         <div class="card">
-          <h2>Детализация расходов <span class="small">по категориям</span></h2>
+          <h2>Детализация расходов <span class="small">по категориям</span> <span class="tip" data-tip="Покажите клиенту баланс: куда уходят деньги по неделе. Категории совпадают со справочником расходов.">ℹ️</span></h2>
           ${renderKVTable(byExpenseCat, "Категория", "Сумма")}
         </div>
       </div>
@@ -942,7 +1004,7 @@
     $("#content").innerHTML = `
       <div class="grid">
         <div class="card">
-          <h2>Список пользователей <span class="small">доступ подтверждает Владелец</span></h2>
+          <h2>Список пользователей <span class="small">доступ подтверждает Владелец</span> <span class="tip" data-tip="Покажите разницу ролей: у Владельца — права менять статусы, у Сотрудника — только просмотр. Запросы доступа идут на одобрение.">ℹ️</span></h2>
           <table class="table">
             <thead><tr><th>Пользователь</th><th>Роль</th><th>Статус</th><th></th></tr></thead>
             <tbody>
@@ -973,7 +1035,7 @@
         </div>
 
         <div class="card">
-          <h2>Действия владельца <span class="small">демо</span></h2>
+          <h2>Действия владельца <span class="small">демо</span> <span class="tip" data-tip="Для презентации переключите роль между OWNER и EMPLOYEE. Это показывает клиенту, как будет выглядеть доступ с разных сторон.">ℹ️</span></h2>
           <div class="notice">
             <strong>В демо</strong> роль можно переключить для презентации клиенту.
           </div>
@@ -1005,7 +1067,7 @@
     $("#content").innerHTML = `
       <div class="grid">
         <div class="card">
-          <h2>Google Таблица <span class="small">источник истины • ручное редактирование разрешено</span></h2>
+          <h2>Google Таблица <span class="small">источник истины • ручное редактирование разрешено</span> <span class="tip" data-tip="Архитектура: данные сохраняются в Google Sheets, WebApp/бот — интерфейс. Подчеркните, что таблица остается правдивой точкой.">ℹ️</span></h2>
           <div class="notice">
             <strong>Правило:</strong> таблица доступна всем пользователям, но только после одобрения владельца.
             Ручное редактирование допускается (данные в таблице — «истина»).
@@ -1027,7 +1089,7 @@
         </div>
 
         <div class="card">
-          <h2>Подсказка для презентации <span class="small">что говорить клиенту</span></h2>
+          <h2>Подсказка для презентации <span class="small">что говорить клиенту</span> <span class="tip" data-tip="Сценарий разговора: идём по вкладкам сверху вниз. В конце покажите архитектуру таблицы и дальнейшие шаги (Sheets → Backend → Codex).">ℹ️</span></h2>
           <div class="help">
             Рекомендуемый порядок демо:
             <ol>
