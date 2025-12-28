@@ -305,6 +305,162 @@
                     </ul>
                 </div>
             </div>
+
+            <div class="card" style="margin-top:14px; background: var(--card-strong);">
+                <h2 style="margin-top:0;">ТЕХНИЧЕСКОЕ ЗАДАНИЕ v1.0 (клиентский формат)</h2>
+                <p class="muted">Готовый текст, который можно отправить в Telegram / почту или вложить в PDF/Google Docs. Логика и структура полностью отражены в макете.</p>
+
+                <h3>1. Общая цель системы</h3>
+                <p>Закрытая внутренняя система учёта доходов и расходов команды для управленческого контроля и фиксации фактических денежных потоков.</p>
+                <ul>
+                    <li><strong>Telegram-бот</strong> — основной интерфейс.</li>
+                    <li><strong>Telegram WebApp</strong> — расширенный визуальный интерфейс.</li>
+                    <li><strong>Google Таблица</strong> — основное хранилище данных и источник истины.</li>
+                </ul>
+                <p class="muted">Система закрыта, без публичного доступа.</p>
+
+                <h3>2. Пользователи и роли</h3>
+                <table style="width:100%; margin-bottom:12px;">
+                    <thead>
+                        <tr><th style="text-align:left;">Роль</th><th style="text-align:left;">Описание</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Владелец</strong></td><td>Управляет доступами, имеет полный контроль над данными.</td></tr>
+                        <tr><td><strong>Сотрудник</strong></td><td>Работает с доходами, расходами и аналитикой.</td></tr>
+                    </tbody>
+                </table>
+                <ul>
+                    <li>Бот закрыт по умолчанию. Первый вход — запрос на доступ.</li>
+                    <li>Только владелец может одобрить или отозвать доступ.</li>
+                    <li>Удаление пользователя не удаляет данные и историю действий, только блокирует вход.</li>
+                </ul>
+
+                <h3>3. Доходы — бизнес-модель</h3>
+                <p><strong>Источник дохода:</strong> приёмки (внешние сервисы), которые платят по гео (странам). На старте подключены:</p>
+                <ul>
+                    <li><strong>CoinLink</strong> — Коста-Рика</li>
+                    <li><strong>LatamPayments</strong> — Гватемала, Эквадор</li>
+                    <li><strong>Kiper</strong> — Мексика, Аргентина, Перу, Эквадор, Чили, Колумбия</li>
+                </ul>
+                <p>Приёмки и гео можно расширять без ограничений.</p>
+                <p><strong>Логика фиксации выплат (галочки):</strong></p>
+                <ul>
+                    <li>Галочка на уровне гео = выплата получена по конкретному гео.</li>
+                    <li>Галочка на уровне приёмки = выплата получена по всем гео данной приёмки (бизнес-правило «по всей приёмке»).</li>
+                    <li>Галочку можно ставить и снимать, все действия логируются и отправляются в Telegram-канал логов.</li>
+                </ul>
+                <p><strong>Суммы доходов:</strong> вводятся вручную, валюта учёта — USD, пересчёт валют не используется.</p>
+
+                <h3>4. Расходы</h3>
+                <ul>
+                    <li>Все расходы считаются оплаченными по умолчанию, статуса «оплачен/не оплачен» нет.</li>
+                    <li>Расход фиксирует факт платежа.</li>
+                    <li>У каждого расхода обязательна категория из справочника (можно расширять).</li>
+                    <li>Расход можно редактировать или удалить без ограничений по времени.</li>
+                </ul>
+
+                <h3>5. Аналитика</h3>
+                <ul>
+                    <li>Расчёт по неделям (Пн–Вс).</li>
+                    <li>Показатели: доход, расход, чистый результат (доход − расход).</li>
+                    <li>Отображается в боте и WebApp; в Google Таблице аналитика может отсутствовать.</li>
+                </ul>
+
+                <h3>6. Telegram-бот — функциональность</h3>
+                <ul>
+                    <li>Запрос доступа.</li>
+                    <li>Ввод доходов и расходов.</li>
+                    <li>Установка и снятие галочек выплат.</li>
+                    <li>Просмотр аналитики.</li>
+                    <li>Управление пользователями (только владелец).</li>
+                </ul>
+
+                <h3>7. WebApp — назначение</h3>
+                <ul>
+                    <li>Расширенный интерфейс и визуальное представление данных.</li>
+                    <li>Через WebApp: вносить доходы и расходы, управлять галочками, смотреть аналитику.</li>
+                </ul>
+
+                <h3>8. Google Таблица — структура и логика (источник истины)</h3>
+                <p>Таблица — единый источник данных. Все операции в боте и WebApp логически работают с этой таблицей.</p>
+                <ol>
+                    <li><strong>INCOME</strong> — доходы</li>
+                    <li><strong>EXPENSE</strong> — расходы</li>
+                    <li><strong>DICT_INTAKES</strong> — приёмки и гео</li>
+                    <li><strong>DICT_CATEGORIES</strong> — категории расходов</li>
+                    <li><strong>LOGS (опционально)</strong> — журнал действий</li>
+                </ol>
+                <div class="grid-two" style="margin:12px 0;">
+                    <div class="card" style="background: var(--card);">
+                        <h4 style="margin:6px 0;">Лист INCOME — Доходы</h4>
+                        <table style="width:100%;">
+                            <thead><tr><th>Колонка</th><th>Название</th><th>Описание</th></tr></thead>
+                            <tbody>
+                                <tr><td>A</td><td>Date</td><td>Дата выплаты</td></tr>
+                                <tr><td>B</td><td>Intake</td><td>Название приёмки</td></tr>
+                                <tr><td>C</td><td>Geo</td><td>Гео (страна)</td></tr>
+                                <tr><td>D</td><td>Amount_USD</td><td>Сумма выплаты</td></tr>
+                                <tr><td>E</td><td>Received</td><td>Чекбокс «Выплата получена»</td></tr>
+                                <tr><td>F</td><td>Level</td><td>Уровень отметки: geo / intake</td></tr>
+                                <tr><td>G</td><td>ChangedBy</td><td>Пользователь</td></tr>
+                                <tr><td>H</td><td>ChangedAt</td><td>Дата и время изменения</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card" style="background: var(--card);">
+                        <h4 style="margin:6px 0;">Лист EXPENSE — Расходы</h4>
+                        <table style="width:100%;">
+                            <thead><tr><th>Колонка</th><th>Название</th><th>Описание</th></tr></thead>
+                            <tbody>
+                                <tr><td>A</td><td>Date</td><td>Дата расхода</td></tr>
+                                <tr><td>B</td><td>Category</td><td>Категория</td></tr>
+                                <tr><td>C</td><td>Amount_USD</td><td>Сумма</td></tr>
+                                <tr><td>D</td><td>Comment</td><td>Комментарий</td></tr>
+                                <tr><td>E</td><td>EditedBy</td><td>Пользователь</td></tr>
+                                <tr><td>F</td><td>EditedAt</td><td>Дата и время</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="grid-two" style="margin:12px 0;">
+                    <div class="card" style="background: var(--card);">
+                        <h4 style="margin:6px 0;">DICT_INTAKES — Приёмки и гео</h4>
+                        <table style="width:100%;">
+                            <thead><tr><th>Колонка</th><th>Название</th></tr></thead>
+                            <tbody>
+                                <tr><td>A</td><td>Intake</td></tr>
+                                <tr><td>B</td><td>Geo</td></tr>
+                            </tbody>
+                        </table>
+                        <p class="muted">Одна приёмка может иметь несколько строк (по количеству гео).</p>
+                    </div>
+                    <div class="card" style="background: var(--card);">
+                        <h4 style="margin:6px 0;">DICT_CATEGORIES — Категории расходов</h4>
+                        <table style="width:100%;">
+                            <thead><tr><th>Колонка</th><th>Название</th></tr></thead>
+                            <tbody>
+                                <tr><td>A</td><td>Category</td></tr>
+                            </tbody>
+                        </table>
+                        <p class="muted">Справочник расширяется по мере необходимости.</p>
+                    </div>
+                </div>
+                <div class="card" style="background: var(--card);">
+                    <h4 style="margin:6px 0;">Лист LOGS (опционально)</h4>
+                    <table style="width:100%;">
+                        <thead><tr><th>Колонка</th><th>Название</th></tr></thead>
+                        <tbody>
+                            <tr><td>A</td><td>DateTime</td></tr>
+                            <tr><td>B</td><td>User</td></tr>
+                            <tr><td>C</td><td>Action</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="muted">Доступ к таблице получают все пользователи после одобрения владельцем. Ручное редактирование разрешено, источник истины — сама Таблица.</p>
+
+                <h3>9. Логирование</h3>
+                <p>Логируются установка и снятие галочек, ключевые действия пользователей. Логи отправляются в отдельный Telegram-канал и при необходимости дублируются в таблицу.</p>
+            </div>
         </section>
 
         <section id="income" class="section">
