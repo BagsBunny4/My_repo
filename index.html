@@ -395,7 +395,7 @@
       <div class="brand">
         <div class="logo">M</div>
         <div>
-          <h1>Magnus Finance — WebApp <span class="sub">ALELU Консалтинг • Прототип для презентации</span></h1>
+          <h1>Magnus Finance — WebApp <span class="sub">ALELU Консалтинг • Клиентский макет</span></h1>
         </div>
       </div>
       <div class="meta">
@@ -417,8 +417,8 @@
     </div>
 
     <div class="infobar">
-      <div class="flag">🎯 Наведитесь на значок ℹ️ — везде подсказки для клиента.</div>
-      <div class="flag">🧭 Покажите оба сценария: Владелец ↔ Сотрудник (переключение ниже).</div>
+      <div class="flag">🎯 Наводите на значок ℹ️ — везде подсказки о том, как работает WebApp.</div>
+      <div class="flag">🧭 Переключайте роли: Владелец ↔ Сотрудник, чтобы увидеть оба сценария доступа.</div>
       <div class="flag">🗂️ Вкладка «Таблица» показывает архитектуру хранения и Google Sheets.</div>
     </div>
 
@@ -427,7 +427,7 @@
 
     <div class="footer">
       <div class="badge">UI-прототип • Без backend</div>
-      <div class="smallmono">Совет: откройте файл в браузере, затем покажите клиенту «как будет выглядеть WebApp в Telegram».</div>
+      <div class="smallmono">Откройте файл в браузере: интерфейс повторяет внешний вид WebApp в Telegram.</div>
     </div>
   </div>
 
@@ -515,7 +515,7 @@
   $("#btnAbout").addEventListener("click", ()=>{
     const body = `
       <div class="notice">
-        <strong>Прототип WebApp</strong> (UI-only). Он показывает клиенту:
+        <strong>Прототип WebApp</strong> (UI-only). Здесь видно:
         <ul>
           <li>Вкладки: Доходы / Расходы / Аналитика / Пользователи / Таблица</li>
           <li>Логику приёмок и гео с галочками «выплата получена»</li>
@@ -559,7 +559,7 @@
     $("#content").innerHTML = `
       <div class="grid">
         <div class="card">
-            <h2>Добавить доход <span class="small">Выплата от приёмки по гео • ${state.currency}</span> <span class="tip" data-tip="Покажите путь сотрудника: выбирает дату, приёмку, гео, сумму и ставит галочку получения. В реальной версии запись уходит в Sheets и логируется.">ℹ️</span></h2>
+            <h2>Добавить доход <span class="small">Выплата от приёмки по гео • ${state.currency}</span> <span class="tip" data-tip="Путь сотрудника: выбрать дату, приёмку, гео, сумму и при необходимости отметить получение. В проде запись уходит в Google Sheets и логируется.">ℹ️</span></h2>
           <div class="row">
             <div class="field">
               <div class="label">Дата выплаты</div>
@@ -599,7 +599,7 @@
         </div>
 
         <div class="card">
-          <h2>Справочник приёмок <span class="small">динамический</span> <span class="tip" data-tip="Владелец управляет доступными приёмками и гео. Покажите, что список легко дополнять без доработки интерфейса.">ℹ️</span></h2>
+          <h2>Справочник приёмок <span class="small">динамический</span> <span class="tip" data-tip="Владелец управляет доступными приёмками и гео. Список можно дополнять без доработки интерфейса.">ℹ️</span></h2>
           ${renderCatalogMini()}
           <div class="sep"></div>
           <div class="notice">
@@ -772,7 +772,7 @@
     $("#content").innerHTML = `
       <div class="grid">
         <div class="card">
-          <h2>Добавить расход <span class="small">Все расходы считаются оплаченными • ${state.currency}</span> <span class="tip" data-tip="Путь сотрудника: фиксирует дату, категорию, сумму и комментарий. Покажите, что статус «оплачено» ставится автоматически.">ℹ️</span></h2>
+          <h2>Добавить расход <span class="small">Все расходы считаются оплаченными • ${state.currency}</span> <span class="tip" data-tip="Путь сотрудника: фиксировать дату, категорию, сумму и комментарий. Статус «оплачено» ставится автоматически.">ℹ️</span></h2>
           <div class="row">
             <div class="field">
               <div class="label">Дата</div>
@@ -818,7 +818,7 @@
       </div>
 
       <div class="card" style="margin-top:14px;">
-        <h2>Журнал расходов <span class="small">пример данных</span> <span class="tip" data-tip="Расходы можно править и удалять всегда. Покажите редактирование вживую: клиент увидит автора и время изменения.">ℹ️</span></h2>
+        <h2>Журнал расходов <span class="small">пример данных</span> <span class="tip" data-tip="Расходы можно править и удалять всегда. При изменении фиксируются автор и время правки.">ℹ️</span></h2>
         ${renderExpenseTable()}
       </div>
     `;
@@ -913,7 +913,7 @@
     $("#content").innerHTML = `
       <div class="grid">
         <div class="card">
-          <h2>Неделя (Пн–Вс) <span class="small">${start} → ${end}</span> <span class="tip" data-tip="Как читать: период всегда понедельник-воскресенье. Покажите клиенту три числа: доход, расход, чистый результат.">ℹ️</span></h2>
+          <h2>Неделя (Пн–Вс) <span class="small">${start} → ${end}</span> <span class="tip" data-tip="Как читать: период всегда понедельник-воскресенье. Главные числа: доход, расход, чистый результат.">ℹ️</span></h2>
           <div class="kpi">
             <div class="box">
               <div class="val">${fmtMoney(incomeSum)}</div>
@@ -956,7 +956,7 @@
         </div>
 
         <div class="card">
-          <h2>Детализация расходов <span class="small">по категориям</span> <span class="tip" data-tip="Покажите клиенту баланс: куда уходят деньги по неделе. Категории совпадают со справочником расходов.">ℹ️</span></h2>
+          <h2>Детализация расходов <span class="small">по категориям</span> <span class="tip" data-tip="Баланс расходов по неделе: видно, куда уходят деньги. Категории совпадают со справочником расходов.">ℹ️</span></h2>
           ${renderKVTable(byExpenseCat, "Категория", "Сумма")}
         </div>
       </div>
@@ -1004,7 +1004,7 @@
     $("#content").innerHTML = `
       <div class="grid">
         <div class="card">
-          <h2>Список пользователей <span class="small">доступ подтверждает Владелец</span> <span class="tip" data-tip="Покажите разницу ролей: у Владельца — права менять статусы, у Сотрудника — только просмотр. Запросы доступа идут на одобрение.">ℹ️</span></h2>
+          <h2>Список пользователей <span class="small">доступ подтверждает Владелец</span> <span class="tip" data-tip="Разница ролей: у Владельца есть права менять статусы, у Сотрудника — только просмотр. Запросы доступа идут на одобрение.">ℹ️</span></h2>
           <table class="table">
             <thead><tr><th>Пользователь</th><th>Роль</th><th>Статус</th><th></th></tr></thead>
             <tbody>
@@ -1035,9 +1035,9 @@
         </div>
 
         <div class="card">
-          <h2>Действия владельца <span class="small">демо</span> <span class="tip" data-tip="Для презентации переключите роль между OWNER и EMPLOYEE. Это показывает клиенту, как будет выглядеть доступ с разных сторон.">ℹ️</span></h2>
+          <h2>Действия владельца <span class="small">демо</span> <span class="tip" data-tip="Переключайте роль между OWNER и EMPLOYEE, чтобы посмотреть, как меняется интерфейс и права.">ℹ️</span></h2>
           <div class="notice">
-            <strong>В демо</strong> роль можно переключить для презентации клиенту.
+            <strong>В демо</strong> роль можно свободно переключать, чтобы увидеть оба сценария.
           </div>
           <div class="sep"></div>
           <div class="row">
@@ -1089,9 +1089,9 @@
         </div>
 
         <div class="card">
-          <h2>Подсказка для презентации <span class="small">что говорить клиенту</span> <span class="tip" data-tip="Сценарий разговора: идём по вкладкам сверху вниз. В конце покажите архитектуру таблицы и дальнейшие шаги (Sheets → Backend → Codex).">ℹ️</span></h2>
+          <h2>Маршрут просмотра <span class="small">как изучить макет</span> <span class="tip" data-tip="Идите по вкладкам сверху вниз. В конце — архитектура таблицы и следующий шаг (Sheets → Backend → Codex).">ℹ️</span></h2>
           <div class="help">
-            Рекомендуемый порядок демо:
+            Рекомендуемый порядок:
             <ol>
               <li>Доходы: приёмки → гео → галочки → суммы</li>
               <li>Расходы: категории → добавление → редактирование/удаление</li>
